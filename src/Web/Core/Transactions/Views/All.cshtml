@@ -1,0 +1,202 @@
+﻿@using Web.Core.Transactions
+@model Web.Core.Transactions.ViewModels.SearchViewModel
+@{
+    ViewBag.Title = "لیست فایل های فزونی";
+}
+
+<div class="m-portlet">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    لیست فایل های فزونی ثبت شده در سامانه
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="m-portlet__body">
+        <form>
+            <div id="search">
+                <div class="row row-no-gutters">
+
+
+                    <div class="form-group col-md-3">
+                        <label asp-for="FromDate" class="control-label"></label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text cursor-pointer" id="btnFromDate"><i class="far fa-calendar-alt"></i></span>
+                            </div>
+                            <input asp-for="FromDate" class="form-control" />
+                        </div>
+                        <span class="help-block"><span asp-validation-for="FromDate" class="text-danger"></span></span>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label asp-for="ToDate" class="control-label"></label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text cursor-pointer" id="btnToDate"><i class="far fa-calendar-alt"></i></span>
+                            </div>
+                            <input asp-for="ToDate" class="form-control" />
+                        </div>
+                        <span class="help-block"><span asp-validation-for="ToDate" class="text-danger"></span></span>
+                    </div>
+                    <div class="form-group col-md-1">
+                        <button class="btn btn-primary" onclick="event.preventDefault(); reloadData($(this.form),'@Url.Action(nameof(TransactionsController.GetFozoniFiles))');">
+                            جستجو
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        function reloadData(targetForm, url) {
+            var dSource = $('#report-grid').data('kendoGrid').dataSource;
+            dSource.transport.options.read.url = `${url}?${targetForm.serialize()}`;
+            $('#report-grid').data('kendoGrid').dataSource.read();
+            $('#dataModal').modal('hide');
+        }
+        $(document).ready(function () {
+            const dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action(nameof(TransactionsController.GetFozoniFiles))',
+                        dataType: "json",
+                        type: 'GET'
+                    },
+                    parameterMap: function(options) {
+                        return `models= ${kendo.stringify(options)}`;
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total"
+                },
+                error: function(e) {
+                    alert(e.errorThrown);
+                },
+                pageSize: 10,
+                sort: { field: "Id", dir: "asc" },
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            });
+
+            var grid = $("#report-grid").kendoGrid({
+                dataSource: dataSource,
+                autoBind: true,
+                detailInit: detailInit,
+                scrollable: false,
+                pageable: {
+                    buttonCount: 5,
+                    refresh: true,
+                    input: true,
+                    pageSizes: [5, 10, 15, 20, 25, 50, 100],
+                    info: true
+                },
+                sortable: true,
+                filterable: {
+                    mode: "menu",
+                    messages: {
+                        selectedItemsFormat: "{0} آیتم انتخاب شده",
+                        search: "جستجو",
+                        checkAll: "انتخاب همه",
+                        clear: "لغو",
+                        filter: "اعمال"
+                    }
+                },
+                toolbar: [{
+                    template: `<button class="k-button" id="deleteSelection" data-url="@Url.Action(nameof(TransactionsController.DeleteRows))"><span class="k-icon k-i-delete"></span>حذف انتخاب شده ها</button>`
+                }],
+                reorderable: true,
+                columnMenu: true,
+                columns: [
+                    { template: "<input type='checkbox' class='checkbox' />" },
+                    { field: "Id", hidden:true },
+                    { field: "Name", title: "نام فایل", media: "(min-width: 450px)" },
+                    { field: "BranchName", title: "نام شعبه", media: "(min-width: 450px)" },
+                    { field: "BranchCode", title: "کد شعبه", media: "(min-width: 450px)" },
+                    { field: "RegDateTime", template: "#=moment(RegDateTime).format('jYYYY/jMM/jDD')#", title: "تاریخ ثبت", media: "(min-width: 450px)" },
+                    { field: "UserName", title: "کاربر ثبت کننده", media: "(min-width: 450px)", filterable: { multi: true, search: true } },
+                    {
+                        title: "جزئیات", template: kendo.template($("#responsive-column-template").html()), media: "(max-width: 450px)"
+                    },
+                ]
+            }).data("kendoGrid");
+            grid.table.on("click", ".checkbox" , selectRow);
+
+        function detailInit(e) {
+            $("<div/>").appendTo(e.detailCell).kendoGrid({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetRecordsAll", "TransactionDetails")',
+                            dataType: "json",
+                            type: 'GET'
+                        },
+                        parameterMap: function(options) {
+                            return `models=${kendo.stringify(options)}`;
+                        }
+                    },
+                    schema: {
+                        data: "Data",
+                        total: "Total"
+                    },
+                    serverPaging: true,
+                    serverSorting: true,
+                    serverFiltering: true,
+                    pageSize: 10,
+                    filter: { field: "FileId", operator: "eq", value: e.data.Id }
+                },
+                scrollable: false,
+                sortable: true,
+                pageable: true,
+                @*toolbar: [{
+                    template: `<button class="k-button" id="deleteSelection" data-url="@Url.Action(nameof(TransactionDetailsController.DeleteRows))"><span class="k-icon k-i-delete"></span>حذف انتخاب شده ها</button>`
+                }],*@
+                columns: [
+                    @*{ template: "<input type='checkboxChild' class='checkbox' />" },*@
+                    { field: "Id", hidden:true },
+                    { field: "Date", template: "#=Date.match(/.{1,2}/g).join('/')#", title: "تاریخ", media: "(min-width: 450px)" },
+                    { field: "Time", template: "#=Time.match(/.{1,2}/g).join(':')#", title: "ساعت", media: "(min-width: 450px)" },
+                    { field: "AtmCode", title: "کد دستگاه", media: "(min-width: 450px)" },
+                    { field: "CardNumber", title: "شماره کارت", media: "(min-width: 450px)" },
+                    { field: "Amount", title: "مبلغ", format: "{0:#,##}", media: "(min-width: 450px)" },
+                    { field: "IsRefahi", title: "رفاه کارت است؟", attributes:{ class:"text-center" },
+                        template: '<input type="checkbox" #: IsRefahi ? "checked=checked" : "" # disabled />'
+                    },
+                    { field: "ReferenceDateBoss", title: "تاریخ ارجاع رئیس شعبه", media: "(min-width: 450px)" },
+                    { field: "ReferenceDateOperator", title: "تاریخ ارجاع متصدی", media: "(min-width: 450px)" },
+                    { field: "StatusTitle", title: "وضعیت", media: "(min-width: 450px)", filterable: { multi: true, search: true } },
+                    { field: "UserDescription", title: "توضیحات کاربر", media: "(min-width: 450px)" },
+                ]
+            });
+        }
+        });
+    </script>
+    <script id="responsive-column-template" type="text/x-kendo-template">
+        <strong>عنوان</strong>
+        <p class="col-template-val">#:data.Name#</p>
+    </script>
+    <script type="text/javascript">
+        $('#btnFromDate').MdPersianDateTimePicker({
+            targetTextSelector: '#FromDate',
+            textFormat: 'yy/MM/dd',
+            englishNumber: true,
+            enableTimePicker: false
+        });
+        $('#btnToDate').MdPersianDateTimePicker({
+            targetTextSelector: '#ToDate',
+            textFormat: 'yy/MM/dd',
+            englishNumber: true,
+            enableTimePicker: false
+        });
+    </script>
+}

@@ -1,0 +1,45 @@
+﻿@model Web.Core.Setting.ViewModels.SmsViewModel
+@{
+    ViewData["Title"] = "تنظیمات پیامک";
+}
+<div class="m-portlet">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    @ViewBag.Title
+                </h3>
+            </div>
+        </div>
+    </div>
+    <form asp-controller="Setting" asp-action="SaveSmsDetail" id="frmSettingSmsDetail" method="post">
+        <div class="m-portlet__body">
+            @{ await Html.RenderPartialAsync("_CustomValidationSummary"); }
+            <div class="form-group ">
+                <label asp-for="ServiceNumber" class="control-label"></label>
+                <input asp-for="ServiceNumber" class="form-control" />
+                <span class="help-block"><span asp-validation-for="ServiceNumber" class="text-danger"></span></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserName" class="control-label"></label>
+                <input asp-for="UserName" class="form-control" />
+                <span class="help-block"><span asp-validation-for="UserName" class="text-danger"></span></span>
+            </div>  <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span class="help-block"><span asp-validation-for="Password" class="text-danger"></span></span>
+            </div>
+        </div>
+        <div class="m-portlet__foot">
+            <button perform="action" onclick="saveAndupdate($(this.form), '@Url.Action("SaveSmsDetail", "Setting")');return false;" class="btn btn-primary">
+                ذخیره
+            </button>
+        </div>
+    </form>
+</div>
+@section scripts
+    {
+    <script>
+        //$("#li-sms-setting, #li-setting").addClass('m-menu__item--active m-menu__item--open');
+    </script>
+}

@@ -1,0 +1,41 @@
+﻿@model Web.Core.ATMUnknown.ViewModels.ListWorkfollowViewModel
+
+<div class="modal-body">
+    <table class="table table-striped" id="Table">
+        <thead class="thead-light">
+            <tr>
+                <th>
+                    تاریخ ایجاد
+                </th>
+                <th>
+                    کابر
+                </th>
+                <th>
+                    وضعیت
+                </th>
+                <th>
+                    پیغام
+                </th>
+            </tr>
+        </thead>
+        <tbody id="UploadFiles">
+            @foreach (var item in Model.Workfollows)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CreateDateTime)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.User)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UserMessage)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

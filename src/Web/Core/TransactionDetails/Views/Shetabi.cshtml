@@ -1,0 +1,139 @@
+﻿@using Web.Core.TransactionDetails
+@model Web.Core.TransactionDetails.ViewModels.SearchViewModel
+
+@{
+    ViewBag.Title = "لیست تراکنش های شتابی";
+}
+
+<div class="m-portlet">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    لیست تراکنش های شتابی ثبت شده در سامانه
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        function reloadData(targetForm, url){
+            var dSource = $('#report-grid').data('kendoGrid').dataSource;
+            dSource.transport.options.read.url = `${url}?${targetForm.serialize()}`;
+            $('#report-grid').data('kendoGrid').dataSource.read();
+            $('#dataModal').modal('hide');
+        }
+
+        $(document).ready(function () {
+            const dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action(nameof(TransactionDetailsController.GetShetabiRecords), Model)',
+                        dataType: "json",
+                        type: 'GET'
+                    },
+                    parameterMap: function(options) {
+                        return `models= ${kendo.stringify(options)}`;
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total",
+                    model: {
+                        fields:{
+                            IsShetabiPrinted: {type: "boolean"}
+                        }
+                    }
+                },
+                error: function(e) {
+                    alert(e.errorThrown);
+                },
+                pageSize: 10,
+                sort: { field: "IsShetabiPrinted", dir: "asc" },
+                filter: { field: "IsShetabiPrinted", operator: "equals", value: false },
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            });
+
+            var grid = $("#report-grid").kendoGrid({
+                dataSource: dataSource,
+                autoBind: true,
+                scrollable: false,
+                pageable: {
+                    buttonCount: 5,
+                    refresh: true,
+                    input: true,
+                    pageSizes: [5, 10, 15, 20, 25, 50, 100],
+                    info: true
+                },
+                sortable: true,
+                filterable: {
+                    mode: "menu",
+                    messages: {
+                        selectedItemsFormat: "{0} آیتم انتخاب شده",
+                        search: "جستجو",
+                        checkAll: "انتخاب همه",
+                        clear: "لغو",
+                        filter: "اعمال"
+                    }
+                },
+                toolbar: [{
+                    template: kendo.template($("#toolbar-header-template").html())
+                }],
+                reorderable: true,
+                columnMenu: true,
+                columns: [
+                    {
+                        template: '<input type="checkbox" class="checkbox" #: checkrow(Id) ? "checked=checked" : "" #/>',
+                        headerTemplate: "<input type='checkbox' id='chkSelectAll' onclick='checkAll(this)'/>"
+        },
+                    { field: "Id", hidden:true },
+                    { field: "Date", template: "#=Date.match(/.{1,2}/g).join('/')#", title: "تاریخ", media: "(min-width: 450px)" },
+                    { field: "Time", template: "#=Time.match(/.{1,2}/g).join(':')#", title: "ساعت", media: "(min-width: 450px)" },
+                    { field: "AtmCode", title: "کد دستگاه", media: "(min-width: 450px)" },
+                    { field: "CardNumber", title: "شماره کارت", media: "(min-width: 450px)" },
+                    { field: "Amount", title: "مبلغ", format: "{0:#,##}", media: "(min-width: 450px)" },
+                    { field: "TransactionNumber", title: "شماره تراکنش", format: "{0:#,##}", media: "(min-width: 450px)" },
+                    { field: "DocumentCode", title: "شماره سند", format: "{0:#,##}", media: "(min-width: 450px)" },
+                    { field: "BranchName", title: "نام شعبه", format: "{0:#,##}", media: "(min-width: 450px)" },
+                    { field: "BranchCode", title: "کد شعبه", format: "{0:#,##}", media: "(min-width: 450px)" },
+                    { field: "UserName", title: "نام کاربر", format: "{0:#,##}", media: "(min-width: 450px)" },
+                    { field: "IsShetabiPrinted", title: "ارسال شده است؟", attributes:{ class:"text-center" },
+                        template: '<input type="checkbox" #: IsShetabiPrinted ? "checked=checked" : "" # disabled />' 
+                    },
+                    { field: "StatusTitle", title: "وضعیت", media: "(min-width: 450px)", filterable: { multi: true, search: true } },
+                    
+                ]
+            }).data("kendoGrid");
+            grid.table.on("click", ".checkbox" , selectRow);
+        });
+    </script>
+    <script id="toolbar-header-template" type="text/x-kendo-template">
+        <button class="k-button" data-link="@Url.Action(nameof(TransactionDetailsController.Search), Model)"><span class="k-icon k-i-search"></span>جستجو</button>
+        <button class="k-button" id="getShetabiFile" data-url="@Url.Action(nameof(TransactionDetailsController.GetShetabiFile))">
+            <span class="k-icon k-i-download"></span>دریافت فایل شتابی
+        </button>
+    </script>
+    <script>
+        function checkrow(id) {
+            if (checkedIds[id] == true) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }        
+    </script> 
+    @*<script id="responsive-column-template" type="text/x-kendo-template">
+        <strong>عنوان</strong>
+        <p class="col-template-val">#:data.Name#</p>
+    </script>*@
+            }

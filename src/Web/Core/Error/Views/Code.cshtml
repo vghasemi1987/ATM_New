@@ -1,0 +1,60 @@
+﻿@model Tuple<string, string>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="en" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <title>خطا | پنل مدیریتی</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+
+    <link href="~/css/ui-theme/vendors.bundle.rtl.css" rel="stylesheet" />
+    <link href="~/css/ui-theme/style.bundle.rtl.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="favicon.ico" />
+</head>
+<body class="m--skin- m-header--fixed m-header--fixed-mobile m-aside-left--enabled m-aside-left--skin-dark m-aside-left--fixed m-aside-left--offcanvas m-footer--push m-aside--offcanvas-default">
+    <div class="m-grid m-grid--hor m-grid--root m-page">
+        <div class="m-grid__item m-grid__item--fluid m-grid  m-error-1" style="background-image: url(/images/ui-theme/error-bg.jpg);">
+            <div class="m-error_container">
+                <span class="m-error_number">
+                    <h1>@Model.Item1</h1>
+                </span>
+                <p class="m-error_desc">
+                    OOPS! Something went wrong here
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/js/ui-theme/vendors.bundle.js"></script>
+    <script src="~/js/ui-theme/scripts.bundle.js"></script>
+</body>
+
+
+@*<body class="page-500-full-page">
+    <div class="row">
+        <div class="col-md-12 page-500">
+            <div class=" number">
+                @Model.Item1
+            </div>
+            <div class="details">
+                <h3>@Model.Item2</h3>
+                @if (Model.Item1 == "400")
+                {
+                    <p>
+                        ما در حال تلاش برای رفع آن هستیم!<br/>
+                        لطفا صبور باشید.<br/><br/>
+                    </p>
+                }
+            </div>
+        </div>
+    </div>
+</body>*@
+</html>

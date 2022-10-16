@@ -1,0 +1,154 @@
+﻿html, body {
+    font-family: 'WYekan';
+    font-size:12px;
+}
+:root, .m-subheader .m-subheader__title {
+    font-family: 'WYekan'
+}
+.m-portlet .m-portlet__head .m-portlet__head-caption .m-portlet__head-title .m-portlet__head-text {
+    font-family: 'WYekan'
+}
+.btn, .form-control, .btn.m-btn--custom {
+    font-family: 'WYekan'
+}
+.form-control {
+    padding: .5rem 1rem;
+}
+.img-circle {
+    border-radius: 50%
+}
+.customer-name {
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 32px;
+    padding-right: 5px;
+}
+.form-group {
+    margin-bottom: .4rem;
+}
+label {
+    margin-bottom: .3rem;
+}
+.modal .modal-content .modal-header {
+    padding: 1rem;
+}
+.modal .modal-content .modal-body {
+    padding: 1rem;
+}
+.modal-header .close{
+    padding-top:2rem;
+}
+.col-template-val {
+    margin: 0 0 1em .5em;
+}
+.modal .modal-content .modal-footer {
+    padding: 1rem;
+}
+.popover {
+    right: auto;
+    font-family: 'WYekan'
+}
+.modal-dialog{
+    max-width:600px;
+}
+.modal-lg {
+    max-width: 80%;
+}
+.k-i-expand::before {
+    content: "\e007";
+}
+.k-i-collapse::before {
+    content: "\e002";
+}
+.mds-bootstrap-persian-datetime-picker-container table th, .mds-bootstrap-persian-datetime-picker-container table td, .mds-bootstrap-persian-datetime-picker-container .btn {
+    font-size: inherit;
+}
+.bootstrap-select .dropdown-toggle .filter-option {
+    text-align:right;
+}
+.accept {
+    background-color: aquamarine;
+    text-align: center;
+    border-radius: 5px
+}
+.faild {
+    background-color: indianred;
+    text-align: center;
+    color: white;
+    border-radius: 5px
+}
+.notAcceptable {
+    background-color: yellow;
+    text-align: center;
+    border-radius: 5px
+}
+.notAccessible {
+    background-color: burlywood;
+    text-align: center;
+    border-radius: 5px
+}
+div.dropdown-menu .dropdown-menu {
+    background-color: azure
+}
+.m-aside-header-menu-mobile .m-menu__nav > .m-menu__item > .m-menu__heading .m-menu__link-text, .m-aside-header-menu-mobile .m-menu__nav > .m-menu__item > .m-menu__link .m-menu__link-text {
+    font-size: 1.05rem;
+}
+/*body.modal-open {
+    overflow: auto;
+}
+body.modal-open[style] {
+    padding-right: 0px !important;
+}
+.modal::-webkit-scrollbar {
+    width: 0 !important;
+}
+.modal-body {
+    max-height: calc(100vh - 150px);
+    overflow-y: auto;
+}*/
+.m-aside-menu .m-menu__nav > .m-menu__item > .m-menu__heading .m-menu__link-text, .m-aside-menu .m-menu__nav > .m-menu__item > .m-menu__link .m-menu__link-text {
+    font-size: 1.04rem;
+}
+.m-aside-menu .m-menu__nav > .m-menu__item .m-menu__submenu .m-menu__item > .m-menu__heading .m-menu__link-text, .m-aside-menu .m-menu__nav > .m-menu__item .m-menu__submenu .m-menu__item > .m-menu__link .m-menu__link-text {
+    font-size: 1.02rem;
+}
+.k-treeview .k-in {
+    margin: 1px 12px 1px .16666em;
+}
+.radio-lable {
+    padding: 2px 1em 0 0;
+}
+.k-draghandle.k-state-selected:hover,
+.k-ghost-splitbar-horizontal, .k-ghost-splitbar-vertical, .k-list > .k-state-highlight, .k-list > .k-state-selected,
+.k-marquee-color, .k-panel > .k-state-selected, .k-scheduler .k-scheduler-toolbar .k-state-selected, .k-scheduler .k-today.k-state-selected,
+.k-state-selected, .k-state-selected:link, .k-state-selected:visited, .k-tool.k-state-selected {
+    background-color: #6289db;
+    border-color: #6289db;
+}
+.k-grid td.k-state-selected:hover, .k-grid tr.k-state-selected:hover {
+    background-color: #6289db;
+}
+/*.k-autocomplete, .k-dropdown-wrap, .k-numeric-wrap, .k-picker-wrap, .k-textbox {
+    padding: 0 0 0 0;
+}*/
+.k-list > .k-state-focused.k-state-selected, .k-listview > .k-state-focused.k-state-selected,
+.k-state-focused.k-state-selected, td.k-state-focused.k-state-selected {
+    box-shadow: inset 0 0 3px 1px #6289db;
+}
+.k-button.k-state-active, .k-button:active {
+    background-color: #6289db;
+    border-color: #6289db;
+}
+div.k-treeview{
+    overflow-y:hidden;
+}
+.menu-font{
+    font-size:14px
+}
+.k-treeview .k-in {
+    line-height: 1.9em;
+}
+#report-grid {
+    overflow: auto;
+    background-color: rgb(239, 238, 238);
+}

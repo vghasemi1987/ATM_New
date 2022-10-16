@@ -1,0 +1,142 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "jquery@3.4.1",
+      "destination": "wwwroot/lib/jquery/"
+    },
+    {
+      "library": "jquery-validation-unobtrusive@3.2.11",
+      "destination": "wwwroot/lib/jquery-validation-unobtrusive/"
+    },
+    {
+      "library": "jquery-validate@1.19.0",
+      "destination": "wwwroot/lib/jquery-validate/",
+      "files": [
+        "jquery.validate.min.js",
+        "jquery.validate.js"
+      ]
+    },
+    {
+      "library": "bootstrap-select@1.13.10",
+      "destination": "wwwroot/lib/bootstrap-select/",
+      "files": [
+        "js/bootstrap-select.min.js",
+        "css/bootstrap-select.min.css",
+        "js/i18n/defaults-fa_IR.min.js"
+      ]
+    },
+    {
+      "library": "font-awesome@5.8.2",
+      "destination": "wwwroot/lib/font-awesome/",
+      "files": [
+        "css/all.min.css",
+        "webfonts/fa-brands-400.eot",
+        "webfonts/fa-brands-400.svg",
+        "webfonts/fa-brands-400.ttf",
+        "webfonts/fa-brands-400.woff",
+        "webfonts/fa-brands-400.woff2",
+        "webfonts/fa-regular-400.eot",
+        "webfonts/fa-regular-400.svg",
+        "webfonts/fa-regular-400.ttf",
+        "webfonts/fa-regular-400.woff",
+        "webfonts/fa-regular-400.woff2",
+        "webfonts/fa-solid-900.eot",
+        "webfonts/fa-solid-900.svg",
+        "webfonts/fa-solid-900.ttf",
+        "webfonts/fa-solid-900.woff",
+        "webfonts/fa-solid-900.woff2"
+      ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "jquery.counterup@2.1.0",
+      "files": [
+        "jquery.counterup.min.js"
+      ],
+      "destination": "wwwroot/lib/jquery-counterup/"
+    },
+    {
+      "provider": "unpkg",
+      "library": "bootstrap@4.3.1",
+      "files": [
+        "dist/css/bootstrap.min.css",
+        "dist/js/bootstrap.min.js"
+      ],
+      "destination": "wwwroot/lib/bootstrap/"
+    },
+    {
+      "library": "toastr.js@latest",
+      "files": [
+        "toastr.min.js",
+        "toastr.min.css"
+      ],
+      "destination": "wwwroot/lib/toastr/"
+    },
+    {
+      "provider": "unpkg",
+      "library": "md.bootstrappersiandatetimepicker@3.4.1",
+      "files": [
+        "dist/jquery.md.bootstrap.datetimepicker.js",
+        "dist/jquery.md.bootstrap.datetimepicker.style.css"
+      ],
+      "destination": "wwwroot/lib/md.bootstrappersiandatetimepicker/"
+    },
+    {
+      "provider": "unpkg",
+      "library": "waypoints@4.0.1",
+      "files": [
+        "lib/jquery.waypoints.js",
+        "lib/jquery.waypoints.min.js"
+      ],
+      "destination": "wwwroot/lib/waypoints/"
+    },
+    {
+      "library": "jquery.mask@1.14.15",
+      "files": [
+        "jquery.mask.min.js"
+      ],
+      "destination": "wwwroot/lib/jquery.mask/"
+    },
+    //{
+    //  "provider": "unpkg",
+    //  "library": "persian-datepicker@1.2.0-rc3",
+    //  "destination": "wwwroot/lib/persian-datepicker/"
+    //},
+    {
+      "provider": "unpkg",
+      "library": "persian-date@1.1.0-rc2",
+      "files": [
+        "dist/persian-date.min.js"
+      ],
+      "destination": "wwwroot/lib/persian-date/"
+    },
+    {
+      "provider": "unpkg",
+      "library": "moment-jalaali@0.8.3",
+      "files": [
+        "build/moment-jalaali.js"
+      ],
+      "destination": "wwwroot/lib/moment-jalaali/"
+    },
+    {
+      "provider": "unpkg",
+      "library": "moment@2.24.0",
+      "files": [
+        "min/moment.min.js"
+      ],
+      "destination": "wwwroot/lib/moment/"
+    },
+    {
+      "library": "highcharts@7.1.1",
+      "files": [
+        "highcharts.js",
+        //"modules/export-csv.js",
+        "modules/offline-exporting.js",
+        "modules/exporting.js"
+      ],
+      "destination": "wwwroot/lib/highcharts/"
+    }
+  ]
+}

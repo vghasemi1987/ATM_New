@@ -1,0 +1,40 @@
+﻿@using System.Text
+@using ApplicationCommon
+@using Web.Extensions
+@model IList<Web.Core.Reports.ModelViews.DetailViewModel>
+
+<div class="row m-row--no-padding m-row--col-separator-xl">
+    @foreach (var item in Model)
+    {
+        var sb = new StringBuilder(item.Link);
+        sb.Replace("UserId", User.GetUserId().ToString());
+        sb.Replace("Now", DateTime.Now.ToPersianDateTime("yyyy/MM/dd"));
+        item.Link = sb.ToString();
+
+        <div class="col-md-12 col-lg-6 col-xl-3">
+            <div class="m-widget24">
+                <div class="m-widget24__item">
+                    <h4 class="m-widget24__title">
+                        @item.Title
+                    </h4><br>
+                    <span class="m-widget24__desc">
+                        @item.Description
+                    </span>
+                    <span class="m-widget24__stats m--font-brand">
+                        @item.Value
+                    </span>
+                    <div class="m--space-10"></div>
+                    <div class="progress m-progress--sm">
+                        <div class="progress-bar m--bg-@item.BoxStatus" role="progressbar" style="width: 100%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <span class="m-widget24__change">
+                        <a href="@item.Link">مشاهده</a>
+                    </span>
+                    <span class="m-widget24__number">
+                        <i class="@item.Icon"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+    }
+</div>

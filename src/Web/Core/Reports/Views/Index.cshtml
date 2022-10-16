@@ -1,0 +1,169 @@
+﻿@model Web.Core.Reports.ModelViews.DateRangeViewModel
+
+@{
+    ViewData["Title"] = "گزارشات";
+}
+
+@section scripts
+    {
+    <script src="~/lib/waypoints/lib/jquery.waypoints.min.js"></script>
+    <script src="~/lib/jquery-counterup/jquery.counterup.min.js"></script>
+
+    <script src="~/lib/highcharts/highcharts.js"></script>
+    <script src="~/lib/highcharts/exporting.js"></script>
+    <script src="~/lib/highcharts/offline-exporting.js"></script>
+    @*<script src="~/lib/highcharts/export-csv.js"></script>*@
+
+    <script>
+        jQuery(document).ready(function($) {
+            $('.counterup').counterUp({
+                delay: 10,
+                time: 1000
+            });
+        });
+        //$("#li-report").addClass('m-menu__item--active m-menu__item--open');
+        function report_chart(url) {
+            $.get(url, $('form#frmReportBox').serialize(),
+                function(data) {
+                    $.each(data, function (itemNo, item) {
+                        $('#chart-container')
+                            .append(`<div class='${item.ClassName}' style='${item.Style}' id='container${itemNo = itemNo + 1}'></div>`);
+                        var chart = new window.Highcharts.chart(`container${itemNo}`,
+                            {
+                                legend: { symbolPadding: -20, rtl: true },
+                                chart: {
+                                    style: {
+                                        direction: 'rtl',
+                                        fontFamily: 'WYekan'
+                                    }
+                                },
+                                title: {
+                                    text: item.Title
+                                },
+                                xAxis: {
+                                    categories: item.Categories
+                                },
+                                yAxis: {
+                                    title: {
+                                        text: 'تعداد'
+                                    }
+                                },
+                                tooltip: {
+                                    shared: true,
+                                    useHTML: true
+                                },
+                                series: [
+                                    {
+                                        type: item.Type,
+                                        name: item.SeriesName,
+                                        data: item.Data,
+                                        color: item.Color
+
+                                        //events: {
+                                        //    click: function (event) {
+                                        //        //location.href = "/contact?IntroductionMethodId=1";
+                                        //        console.log(this.Data);
+                                        //        alert(this.Data + " clicked\n" +
+                                        //            "Alt: " + event.altKey + "\n" +
+                                        //            "Control: " + event.ctrlKey + "\n" +
+                                        //            "Shift: " + event.shiftKey + "\n");
+                                        //    }
+                                        //}
+                                        //point: {
+                                        //    events: {
+                                        //        click: function () {
+                                        //            console.log(this);
+                                        //            alert('Category: ' + this.category + ', value: ' + this.myData);
+                                        //        }
+                                        //    }
+                                        //}
+                                    }
+                                ],
+                                "credits": {
+                                    "enabled": false
+                                },
+                                exporting: {
+                                    buttons: {
+                                        contextButton: {
+                                            menuItems: window.Highcharts.defaultOptions.exporting.buttons.contextButton
+                                                .menuItems.slice(0, 8)
+                                        }
+                                    }
+                                },
+                                lang: {
+                                    printChart: 'پرینت نمودار',
+                                    downloadPNG: 'دانلود با فرمت PNG',
+                                    downloadJPEG: 'دانلود با فرمت JPEG',
+                                    downloadPDF: 'دانلود با فرمت PDF',
+                                    downloadSVG: 'دانلود با فرمت SVG',
+                                    contextButtonTitle: 'منوی نمایش',
+                                    downloadCSV: 'دانلود با فرمت CSV',
+                                    downloadXLS: 'دانلود با فرمت XLS',
+                                    viewDataTable: 'نمایش داده های جدول'
+                                }
+                            });
+                        window.Highcharts.setOptions({
+                            lang: {
+                                thousandsSep: ','
+                            }
+                        });
+                        eval(item.ChartOptions);
+                        });
+                });
+        }
+        report_chart('@Url.Action("ChartData", "Reports")');
+
+        $('#btnFromEntryDate').MdPersianDateTimePicker({
+            targetTextSelector: '#FromEntryDate',
+            dateFormat: 'yyyy-MM-dd'
+        });
+        $('#btnToEntryDate').MdPersianDateTimePicker({
+            targetTextSelector: '#ToEntryDate',
+            dateFormat: 'yyyy-MM-dd'
+        });
+    </script>
+}
+<div class="m-portlet">
+    <div class="m-portlet__body">
+        <form asp-controller="Reports" asp-action="ReportBox" id="frmReportBox" method="get">
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text cursor-pointer" id="btnFromEntryDate"><i class="far fa-calendar-alt"></i></span>
+                        </div>
+                        <input asp-for="FromEntryDate" class="form-control" />
+                    </div>
+                    <span asp-validation-for="FromEntryDate" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text cursor-pointer" id="btnToEntryDate"><i class="far fa-calendar-alt"></i></span>
+                        </div>
+                        <input asp-for="ToEntryDate" class="form-control" />
+                        <span asp-validation-for="ToEntryDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="input-group">
+                        @*<label asp-for="ApplicationSystemId" class="control-label"></label>*@
+                        <select asp-for="BranchHeadId" asp-items="@Model.BranchHeadSelectList" title="انتخاب کنید ..."
+                                class="form-control selectpicker show-tick" data-size="4" data-actions-box="true">
+                            <option value="0">انتخاب کنید ...</option>
+                        </select>
+                        <span asp-validation-for="BranchHeadId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button onclick="event.preventDefault();report_box($(this.form));" class="btn btn-primary" perform="action">
+                        اعمال
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <div id="report-box" data-url="@Url.Action("ReportBox", "Reports")"></div>
+        <div class="row" id="chart-container"></div>
+    </div>
+</div>

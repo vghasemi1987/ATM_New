@@ -1,0 +1,106 @@
+﻿@using Web.Core.Transactions
+
+@{
+	ViewBag.Title = "لیست فایل های فزونی";
+}
+
+<div class="m-portlet">
+	<div class="m-portlet__head">
+		<div class="m-portlet__head-caption">
+			<div class="m-portlet__head-title">
+				<h3 class="m-portlet__head-text">
+					لیست فایل های فزونی ثبت شده در سامانه
+				</h3>
+			</div>
+		</div>
+	</div>
+	<div class="m-portlet__body">
+		<div class="k-rtl">
+			<div id="report-grid"></div>
+		</div>
+	</div>
+</div>
+
+@section scripts{
+	<script type="text/javascript">
+        $(document).ready(function () {
+            const dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action(nameof(TransactionsController.GetFozoniFiles))',
+                        dataType: "json",
+                        type: 'GET'
+                    },
+                    parameterMap: function(options) {
+                        return `models= ${kendo.stringify(options)}`;
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total"
+                },
+                error: function(e) {
+                    alert(e.errorThrown);
+                },
+                pageSize: 10,
+                sort: { field: "RegDateTime", dir: "desc" },
+                filter:{"logic":"or","filters":[{"field":"LastStatusTitle","operator":"eq","value":"ثبت و پردازش شده"},{"field":"LastStatusTitle","operator":"eq","value":"بازگشت به متصدی"}]},
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            });
+
+            var grid = $("#report-grid").kendoGrid({
+                dataSource: dataSource,
+                autoBind: true,
+                scrollable: false,
+                pageable: {
+                    buttonCount: 5,
+                    refresh: true,
+                    input: true,
+                    pageSizes: [5, 10, 15, 20, 25, 50, 100],
+                    info: true
+                },
+                sortable: true,
+                filterable: {
+                    mode: "menu",
+                    messages: {
+                        selectedItemsFormat: "{0} آیتم انتخاب شده",
+                        search: "جستجو",
+                        checkAll: "انتخاب همه",
+                        clear: "لغو",
+                        filter: "اعمال"
+                    }
+                },
+                toolbar: [{
+                    template:
+                        `<button class="k-button" data-title="ثبت فایل فزونی جدید" data-link="@Url.Action(nameof(TransactionsController.UploadFile))"><span class="k-icon k-i-add"></span>ثبت فایل فزونی جدید</button>
+                         <button class="k-button" id="deleteSelection" data-url="@Url.Action(nameof(TransactionsController.DeleteRows))"><span class="k-icon k-i-delete"></span>حذف انتخاب شده ها</button>`
+                }],
+                reorderable: true,
+                columnMenu: true,
+                columns: [
+                    { template: "<input type='checkbox' class='checkbox' />" },
+                    { field: "Id", hidden:true },
+                    { field: "Name", title: "نام فایل", media: "(min-width: 450px)" },
+                    { field: "LastStatusTitle", title: "آخرین وضعیت اعمال شده بر روی آخرین تراکنش", media: "(min-width: 450px)" },
+                    { field: "RegDateTime", template: "#=moment(RegDateTime).format('jYYYY/jMM/jDD - HH:mm:ss')#", title: "تاریخ ثبت", media: "(min-width: 450px)" },
+                    { field: "UserName", title: "کاربر ثبت کننده", media: "(min-width: 450px)", filterable: { multi: true, search: true } },
+                   // {
+                   //     title: "جزئیات", template: kendo.template($("#responsive-column-template").html()), media: "(max-width: 450px)"
+                   // },
+                    {
+                        title: "عملیات",
+                        template:
+                            '<a class="k-button" href="@Url.Action("Index", "TransactionDetails")?id=#:Id#"><span class="k-icon k-i-document-manager"></span>جزییات فایل</a>'
+                    }
+                ]
+            }).data("kendoGrid");
+            grid.table.on("click", ".checkbox" , selectRow);
+        });
+	</script>
+	<script id="responsive-column-template" type="text/x-kendo-template">
+		<strong>عنوان</strong>
+		<p class="col-template-val">#:data.Name#</p>
+	</script>
+}

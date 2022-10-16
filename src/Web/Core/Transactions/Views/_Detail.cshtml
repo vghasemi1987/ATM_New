@@ -1,0 +1,18 @@
+﻿@model Web.Core.Transactions.ViewModels.UploadFileViewModel
+
+<form asp-controller="Transactions" asp-action="UploadFile" id="frmUploadFile" method="post">
+    <div class="modal-body">
+        <div class="form-group">
+            <label asp-for="PostedFile" class="control-label"></label>
+            <input asp-for="PostedFile" type="file" />
+            <span asp-validation-for="PostedFile" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" data-dismiss="modal">خروج</button>
+        <button onclick="event.preventDefault(); saveAndupdateFile($(this.form), '@Url.Action("UploadFile", "Transactions")');"
+                class="btn btn-primary" perform="action">
+            ارسال
+        </button>
+    </div>
+</form>

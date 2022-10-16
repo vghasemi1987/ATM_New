@@ -1,0 +1,34 @@
+﻿@*@using ApplicationCommon
+@using Web.Extensions
+@model List<Web.Core.ToDoTask.ViewModels.ToDoTaskListViewModel>
+
+<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-close-others="true">
+    <i class="fas fa-tasks"></i>
+    <span class="badge badge-default" id="task-count">@Model.Count</span>
+</a>
+@if (Model != null)
+{
+    <ul class="dropdown-menu">
+        <li class="external">
+            <h3>
+                تعداد وظایف
+                (<span class="bold">@Model.Count</span>)
+            </h3>
+            <a asp-action="Index" asp-controller="ToDoTask" asp-route-CreatorUserId="@User.GetUserId()"
+               asp-route-AssignedToUserId="@User.GetUserId()" asp-route-oper="Or">نمایش همه</a>
+        </li>
+        <li>
+            <ul class="dropdown-menu-list scroller" style="height: 275px;" data-handle-color="#637283">
+                @foreach (var item in Model)
+                {
+                    <li>
+                        <a asp-action="Detail" asp-controller="ToDoTask" asp-route-id="@item.Id">
+                            <span>@item.Title&nbsp;(@item.DueDateTime.ToPersianDateTime("yyyy/MM/dd HH:mm"))</span>
+                            <div class="text-right">@item.Status</div>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </li>
+    </ul>
+}*@

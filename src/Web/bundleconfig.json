@@ -1,0 +1,97 @@
+﻿// Configure bundling and minification for the project.
+// More info at https://go.microsoft.com/fwlink/?LinkId=808241
+[
+  {
+    "outputFileName": "wwwroot/js/kendogrid.min.js",
+    "inputFiles": [
+      "wwwroot/js/kendo/kendo.all.min.js",
+      "wwwroot/js/kendo/jszip.min.js",
+      "wwwroot/js/kendo/cultures/kendo.culture.fa-IR.min.js",
+      "wwwroot/js/kendo/cultures/kendo.culture.fa.min.js",
+      "wwwroot/lib/kendo-global/lang/kendo.fa-IR.js",
+      "wwwroot/lib/moment/min/moment.min.js",
+      "wwwroot/lib/moment-jalaali/build/moment-jalaali.js",
+      "wwwroot/js/kendo/kendo.aspnetmvc.js"
+    ],
+    // Optionally specify minification options
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    // Optionally generate .map file
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/css/app.min.css",
+    "inputFiles": [
+      "wwwroot/lib/bootstrap-select/css/bootstrap-select.min.css",
+      "wwwroot/lib/font-awesome/css/all.min.css",
+      "wwwroot/css/ui-theme/vendors.bundle.rtl.css",
+      "wwwroot/css/ui-theme/style.bundle.rtl.css",
+      "wwwroot/lib/md.bootstrappersiandatetimepicker/dist/jquery.md.bootstrap.datetimepicker.style.css",
+      "wwwroot/fonts/fonts-fa.css",
+      "wwwroot/css/ui-theme/layout-style.css"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    }
+  },
+  {
+    "outputFileName": "wwwroot/css/kendo.app.min.css",
+    "inputFiles": [
+      "wwwroot/css/kendo/kendo.common.min.css",
+      "wwwroot/css/kendo/kendo.rtl.min.css",
+      "wwwroot/css/kendo/kendo.default.min.css",
+      "wwwroot/css/kendo/kendo.default.mobile.min.css"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    }
+  },
+  {
+    "outputFileName": "wwwroot/js/app.min.js",
+    "inputFiles": [
+      "wwwroot/js/ui-theme/vendors.bundle.js",
+      "wwwroot/js/ui-theme/scripts.bundle.js",
+      "wwwroot/lib/bootstrap-select/js/bootstrap-select.min.js",
+      "wwwroot/lib/bootstrap-select/js/i18n/defaults-fa_IR.min.js",
+      "wwwroot/lib/jquery-validate/jquery.validate.min.js",
+      "wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js",
+      "wwwroot/lib/md.bootstrappersiandatetimepicker/dist/jquery.md.bootstrap.datetimepicker.js",
+      //"wwwroot/js/custom/jquery.bootstrap-modal-confirm.js",
+      //"wwwroot/js/custom/jquery.bootstrap-modal-alert.js",
+      //"wwwroot/js/custom/jquery.bootstrap-modal-ajax-form.js",
+      "wwwroot/js/custom/custom.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/css/login.min.css",
+    "inputFiles": [
+      "wwwroot/fonts/fonts-fa.css",
+      "wwwroot/css/ui-theme/vendors.bundle.rtl.css",
+      "wwwroot/css/ui-theme/style.bundle.rtl.css",
+      "wwwroot/css/ui-theme/layout-style.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/login.min.js",
+    "inputFiles": [
+      "wwwroot/js/ui-theme/vendors.bundle.js",
+      "wwwroot/js/ui-theme/scripts.bundle.js",
+      "wwwroot/js/ui-theme/login.js",
+      "wwwroot/js/custom/custom.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  }
+]

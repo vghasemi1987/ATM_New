@@ -1,0 +1,36 @@
+﻿@model Web.Core.HamrahLoanHeaders.ViewModels.ChangeStatusViewModel
+
+    <form asp-controller="HamrahLoanHeaders" asp-action="AddDetail" id="frmAddDetail" method="post">
+        @if (Model.Id > 0)
+        {
+            <div class="modal-body">
+                <input asp-for="Id" type="hidden" />
+                <div class="form-group">
+                    <label asp-for="Status" class="control-label"></label>
+                    <select asp-for="Status" class="form-control">
+                        <option value="">انتخاب کنید ...</option>
+                        <option value="6">مغایرت دارد</option>
+                        <option value="7">عدم مغایرت</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">خروج</button>
+                <button onclick="event.preventDefault(); saveAndupdate($(this.form), '@Url.Action("DetailChangeStatus", "HamrahLoanHeaders")');"
+                        class="btn btn-primary" perform="action">
+                    تغییر
+                </button>
+            </div>
+        }
+        else
+        {
+            <div class="modal-body">
+                <div style="background-color:red;color:black">
+                    <h3>
+                        @Model.Warning
+                    </h3>
+                </div>
+            </div>
+        }
+    </form>

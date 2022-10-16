@@ -1,0 +1,48 @@
+﻿@model string
+
+@{
+    ViewBag.Title = "پیشخوان";
+}
+<div class="m-portlet">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    پیشخوان
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //console.log('test');
+            let str = "@Html.Raw(Model)";
+            //console.log('str', str);
+            if (str == "ChangePassword") {
+                    $.ajax({
+                        url: "/UserManagement/ChangePassword",
+                        type: "GET",
+                            traditional: true,
+                        success: function(result) {
+                            $('#dataModal').modal('show');
+                            $('.modal-title').html('ارسال به مدیر شعبه');
+                            $('.modal-body-parent').html(result);
+                        },
+                        complete :function(data) {
+                            checkedIds = {};
+                        }
+                    });
+                }
+        });
+
+
+    </script>
+}

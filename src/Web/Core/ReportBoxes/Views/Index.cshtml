@@ -1,0 +1,101 @@
+﻿@using Web.Core.ReportBoxes
+@{
+    ViewBag.Title = "لیست باکس های اطلاعاتی";
+}
+
+<div class="m-portlet">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    لیست باکس های گزارشی ثبت شده در سامانه
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //$("#li-setting, #li-systems-list").addClass('m-menu__item--active m-menu__item--open');
+            const dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetRecords", "ReportBoxes")',
+                        dataType: "json",
+                        type: 'GET'
+                    },
+                    parameterMap: function(options) {
+                        return `models= ${kendo.stringify(options)}`;
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total"
+                },
+                error: function(e) {
+                    alert(e.errorThrown);
+                },
+                pageSize: 10,
+                sort: { field: "Id", dir: "desc" },
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            });
+
+            $("#report-grid").kendoGrid({
+                dataSource: dataSource,
+                autoBind: true,
+                scrollable: false,
+                pageable: {
+                    buttonCount: 5,
+                    refresh: true,
+                    input: true,
+                    pageSizes: [5, 10, 15, 20, 25, 50, 100],
+                    info: true
+                },
+                sortable: true,
+                filterable: {
+                    mode: "menu"
+                },
+                toolbar: [{
+                    template:
+                        '<button class="k-button" data-title="ثبت باکس جدید" data-link="@Url.Action(nameof(ReportBoxesController.GetBoxDetail))"><span class="k-icon k-i-add"></span>ثبت باکس جدید</button>'
+                }],
+                reorderable: true,
+                columnMenu: true,
+                columns: [
+                    { field: "Id", hidden:true },
+                    { field: "Title", title: "عنوان", media: "(min-width: 450px)" },
+                    { field: "Key", title: "شناسه", media: "(min-width: 450px)" },
+                    { field: "Link", title: "لینک", media: "(min-width: 450px)" },
+                    { field: "AccessRight", title: "دسترسی", media: "(min-width: 450px)" },
+                    { field: "Icon", title: "آیکن", media: "(min-width: 450px)", template: '<i class="#:Icon#"></i>' },
+                    { title: "جزئیات", template: kendo.template($("#responsive-column-template").html()), media: "(max-width: 450px)" },
+                    { title: "عملیات",
+                        template:
+                            '<button class="k-button" data-title="ویرایش باکس #:Title#" data-link="@Url.Action(nameof(ReportBoxesController.GetBoxDetail))/#:Id#"><span class="k-icon k-i-edit"></span>ویرایش</button>'
+                    }
+                ]
+            });
+        });
+    </script>
+    <script id="responsive-column-template" type="text/x-kendo-template">
+        <strong>عنوان</strong>
+        <p class="col-template-val">#:data.Title#</p>
+        <strong>شناسه</strong>
+        <p class="col-template-val">#:data.Key#</p>
+        <strong>لینک</strong>
+        <p class="col-template-val">#:data.Link#</p>
+        <strong>دسترسی</strong>
+        <p class="col-template-val">#:data.AccessRight#</p>
+        <strong>آیکن</strong>
+        <p class="col-template-val">#:data.Icon#</p>
+    </script>
+}

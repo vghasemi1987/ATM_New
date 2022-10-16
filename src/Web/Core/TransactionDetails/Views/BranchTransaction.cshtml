@@ -1,0 +1,138 @@
+﻿@using Web.Core.TransactionDetails
+@using Web.Core.TransactionDetails.ViewModels;
+@model Web.Core.TransactionDetails.ViewModels.SearchViewModel
+
+@{
+    ViewBag.Title = "سند برداشت تجمعی فزونی";
+}
+
+<div class="m-portlet">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    سند برداشت تجمعی فزونی های خودپرداز شعب
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        function reloadData(targetForm, url){
+            var dSource = $('#report-grid').data('kendoGrid').dataSource;
+            dSource.transport.options.read.url = `${url}?${targetForm.serialize()}`;
+            $('#report-grid').data('kendoGrid').dataSource.read();
+            $('#dataModal').modal('hide');
+        }
+
+        $(document).ready(function () {
+            const dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action(nameof(TransactionDetailsController.GetSumBranchTransaction), Model)',
+                        dataType: "json",
+                        type: 'GET'
+                    },
+                    parameterMap: function(options) {
+                        return `models= ${kendo.stringify(options)}`;
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total",
+                    model: {
+                        fields:{
+                            IsDocumentPrinted: {type: "boolean"}
+                        }
+                    }
+                },
+                error: function(e) {
+                    alert(e.errorThrown);
+                },
+                pageSize: 10,
+                sort: { field: "IsDocumentPrinted", dir: "desc" },
+                filter: { field: "IsDocumentPrinted", operator: "equals", value: false },
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            });
+
+            var grid = $("#report-grid").kendoGrid({
+                dataSource: dataSource,
+                autoBind: true,
+                scrollable: false,
+                pageable: {
+                    buttonCount: 5,
+                    refresh: true,
+                    input: true,
+                    pageSizes: [5, 10, 15, 20, 25, 50, 100],
+                    info: true
+                },
+                sortable: true,
+                filterable: {
+                    mode: "menu",
+                    messages: {
+                        selectedItemsFormat: "{0} آیتم انتخاب شده",
+                        search: "جستجو",
+                        checkAll: "انتخاب همه",
+                        clear: "لغو",
+                        filter: "اعمال"
+                    }
+                },
+                toolbar: [{
+                    template: kendo.template($("#toolbar-header-template").html())
+                }],
+                reorderable: true,
+                columnMenu: true,
+                columns: [
+                    {
+                        template: '<input type="checkbox" class="checkbox" #: checkrow(Id) ? "checked=checked" : "" #/>' ,
+                        headerTemplate: "<input type='checkbox' id='chkSelectAll' onclick='checkAll(this)'/>"
+                    },
+                    { field: "Id", title: "شماره سند", media: "(min-width: 450px)" },
+                    { field: "TransactionNumber", title: "شماره تراکنش", media: "(min-width: 450px)" },
+                    { field: "BranchCode", title: "کد شعبه", media: "(min-width: 450px)" },
+                    { field: "BranchName", title: "نام شعبه", media: "(min-width: 450px)" },
+                    { field: "AccountNo", title: "شماره حساب شعبه", media: "(min-width: 450px)" },
+                    { field: "Amount", title: "جمع کل مبلغ فزونی", format: "{0:#,##}", media: "(min-width: 450px)" },
+                    { field: "TransactionDate", template: "#=TransactionDate.match(/.{1,2}/g).join('/')#", title: "تاریخ سند", media: "(min-width: 450px)" },
+                    { field: "IsDocumentPrinted", title: "ارسال شده است؟", attributes:{ class:"text-center" },
+                        template: '<input type="checkbox" #: IsDocumentPrinted ? "checked=checked" : "" # disabled />'
+                    }
+                ]
+            }).data("kendoGrid");
+            grid.table.on("click", ".checkbox" , selectRow);
+        });
+    </script>
+    <script id="toolbar-header-template" type="text/x-kendo-template">
+        <button class="k-button" data-link="@Url.Action(nameof(TransactionDetailsController.Search),
+                                           Model)">
+            <span class="k-icon k-i-search"></span>جستجو
+        </button>
+        <button class="k-button" id="getSumBranchTransaction" data-url="@Url.Action(nameof(TransactionDetailsController.GenerateExcelReport))">
+            <span class="k-icon k-i-download"></span>دریافت سند برداشت
+        </button>
+    </script>
+    <script>
+        function checkrow(id) {
+            if (checkedIds[id] == true) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+    </script>
+
+    @*<script id="responsive-column-template" type="text/x-kendo-template">
+            <strong>عنوان</strong>
+            <p class="col-template-val">#:data.Name#</p>
+        </script>*@
+}

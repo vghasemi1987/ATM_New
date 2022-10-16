@@ -1,0 +1,102 @@
+﻿@using Web.Core.Branches
+
+@{
+    ViewBag.Title = "لیست شعب";
+}
+
+<div class="m-portlet">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    لیست شعب ثبت شده در سامانه
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //$("#li-setting, #li-department-list").addClass('m-menu__item--active m-menu__item--open');
+            const dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetRecords", "Branches")',
+                        dataType: "json",
+                        type: 'GET'
+                    },
+                    parameterMap: function(options) {
+                        return `models= ${kendo.stringify(options)}`;
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total"
+                },
+                error: function(e) {
+                    alert(e.errorThrown);
+                },
+                pageSize: 10,
+                sort: { field: "BranchHead", dir: "asc" },
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            });
+
+            var grid = $("#report-grid").kendoGrid({
+                dataSource: dataSource,
+                autoBind: true,
+                scrollable: false,
+                pageable: {
+                    buttonCount: 5,
+                    refresh: true,
+                    input: true,
+                    pageSizes: [5, 10, 15, 20, 25, 50, 100],
+                    info: true
+                },
+                sortable: true,
+                filterable: {
+                    mode: "menu"
+                },
+                toolbar: [{
+                    template:
+                        `<button class="k-button" data-title="ثبت شعبه جدید" data-link="@Url.Action(nameof(BranchesController.GetDetail))"><span class="k-icon k-i-add"></span>ثبت شعبه جدید</button>
+                         <button class="k-button" id="deleteSelection" data-url="@Url.Action(nameof(BranchesController.DeleteRows))"><span class="k-icon k-i-delete"></span>حذف انتخاب شده ها</button>`
+                }],
+                reorderable: true,
+                columnMenu: true,
+                columns: [
+                    { template: "<input type='checkbox' class='checkbox' />" },
+                    { field: "Id", hidden:true },
+                    { field: "Title", title: "عنوان", media: "(min-width: 450px)" },
+                    { field: "Code", title: "کد", media: "(min-width: 450px)" },
+                    { field: "BranchHead", title: "عنوان امور شعب", media: "(min-width: 450px)" },
+                    {
+                        title: "جزئیات", template: kendo.template($("#responsive-column-template").html()), media: "(max-width: 450px)"
+                    },
+                    {
+                        title: "عملیات",
+                        template:
+                            '<button class="k-button" data-title="ویرایش #:Title#" data-link="@Url.Action(nameof(BranchesController.GetDetail))/#:Id#"><span class="k-icon k-i-edit"></span>ویرایش</button>'
+                    }
+                ]
+            }).data("kendoGrid");
+            grid.table.on("click", ".checkbox" , selectRow);
+        });
+    </script>
+    <script id="responsive-column-template" type="text/x-kendo-template">
+        <strong>عنوان</strong>
+        <p class="col-template-val">#:data.Title#</p>
+        <strong>کد</strong>
+        <p class="col-template-val">#:data.Code#</p>
+        <strong>عنوان امور شعب</strong>
+        <p class="col-template-val">#:data.BranchHead#</p>
+    </script>
+}

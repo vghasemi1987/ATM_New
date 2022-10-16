@@ -1,0 +1,141 @@
+﻿@using Web.Core.HamrahLoanHeaders
+@{
+    ViewBag.Title = "گزارش تسهیلات همراه";
+}
+
+<div class="m-portlet">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    گزارش تسهیلات همراه
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            const dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action(nameof(HamrahLoanHeadersController.GetRecordsReport))',
+                        dataType: "json",
+                        type: 'GET'
+                    },
+                    parameterMap: function(options) {
+                        return `models= ${kendo.stringify(options)}`;
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total"
+                },
+                error: function(e) {
+                    alert(e.errorThrown);
+                },
+                pageSize: 10,
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            });
+
+            var grid = $("#report-grid").kendoGrid({
+                dataSource: dataSource,
+                autoBind: true,
+                scrollable: false,
+                pageable: {
+                    buttonCount: 5,
+                    refresh: true,
+                    input: true,
+                    pageSizes: [5, 10, 15, 20, 25, 50, 100],
+                    info: true
+                },
+                sortable: true,
+                filterable: {
+                    mode: "menu",
+                    messages: {
+                        selectedItemsFormat: "{0} آیتم انتخاب شده",
+                        search: "جستجو",
+                        checkAll: "انتخاب همه",
+                        clear: "لغو",
+                        filter: "اعمال"
+                    }
+                },
+                reorderable: true,
+                columnMenu: true,
+                columns: [
+                    { field: "Id", hidden: true },
+                    { field: "StatusId", hidden: true },
+                    { field: "BranchTitle", title: "شعبه", media: "(min-width: 450px)" },
+                    { field: "LoanNumber", title: "شماره", media: "(min-width: 450px)" },
+                    { field: "Amount", title: "مبلغ", media: "(min-width: 450px)" },
+                    { field: "LoanDate", template: "#:LoanDate != null ? moment(LoanDate).format('jYYYY/jMM/jDD') : '---'#", title: "تاریخ تسهیلات", media: "(min-width: 450px)" },
+                    { field: "FolowNumber", title: "شماره پیگیری", media: "(min-width: 450px)" },
+                    {
+                        field: "Status", title: "وضعیت", media: "(min-width: 450px)",
+                        filterable: {
+                            ui: function FacilityFilter(element) {
+                                element.kendoDropDownList({
+                                    dataTextField: "Text",
+                                    dataValueField: "Value",
+                                    dataSource: {
+                                        transport: {
+                                            read: {
+                                                url: '@Url.Action(nameof(HamrahLoanHeadersController.GetRecordsStatusDetail))',
+                                                dataType: "json",
+                                                type: 'GET'
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        },
+                        template:"#:getHamrahLoanStatus(Status)#"
+                    },
+                    { field: "StatusDate", template: "#:StatusDate != null ? moment(StatusDate).format('jYYYY/jMM/jDD') : '---'#", title: "تاریخ تغییر وضعیت", media: "(min-width: 450px)" },
+                    { field: "UserChangeStatus", title: "کاربر ثبت وضعیت", media: "(min-width: 450px)" },
+                    { field: "CreateDate", template: "#:CreateDate != null ? moment(CreateDate).format('jYYYY/jMM/jDD') : '---'#", title: "تاریخ ایجاد", media: "(min-width: 450px)" }
+                    @*,
+                    {
+                        title: "عملیات", template:
+                            '<button class="k-button" data-link="@Url.Action("DetailChangeStatus", "HamrahLoanHeaders")?id=#:Id#&statusId=#:StatusId#" data-title="تغییر وضعیت"><span class="k-icon k-i-edit"></span>تغییر وضعیت</button>'
+                    }*@
+                ]
+            });
+
+
+        });
+    </script>
+    <script id="responsive-column-template" type="text/x-kendo-template">
+        <strong>شماره</strong>
+        <p class="col-template-val">#:data.LoanNumber#</p>
+    </script>
+    <script>
+        function getHamrahLoanStatus(hamrahLoanStatus) {
+            switch (hamrahLoanStatus) {
+                case 1:
+                    return "درحال بررسی";
+                case 3:
+                    return "عدم مغایرت";
+                case 4:
+                    return "شناسه در سما یافت نشد";
+                case 5:
+                    return "شناسه در همراه یافت نشد";
+                case 6:
+                    return "مغایرت دارد توسط کاربر";
+                case 7:
+                    return "عدم مغایرت توسط کاربر";
+                default:
+                    return "";
+            }
+        }
+    </script> 
+}

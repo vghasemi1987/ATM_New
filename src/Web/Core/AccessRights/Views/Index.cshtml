@@ -1,0 +1,144 @@
+﻿@using Web.Core.AccessRights
+@{
+    ViewBag.Title = "لیست نقش ها";
+}
+
+<div class="m-portlet">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    لیست نقش کاربران ثبت شده در سامانه
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        function appendJsonMenu() {
+            var json = treeToJson(treeview.dataSource.view());
+            $('<input />').attr('type', 'hidden')
+                .attr('name', "JsonMenu")
+                .attr('value', JSON.stringify(json))
+                .appendTo('#frmRoleDetail');
+        }
+
+        function treeToJson(nodes) {
+            return $.map(nodes, function(n, i) {
+                var result = { Text: n.Text, Icon: n.Icon, Link: n.Link };
+                if (n.hasChildren){
+                    result.Items = treeToJson(n.children.view());
+                }
+                return result;
+            });
+        }
+
+        $(document).on("click", ".fa-trash-alt", function (e) {
+            e.preventDefault();
+            treeview.remove($(this).closest(".k-item"));
+        });
+
+        $(document).on('click', '#appendNodeToSelected', function(e) {
+            e.preventDefault();
+            var selectedNode = treeview.select();
+            // passing a falsy value as the second append() parameter
+            // will append the new node to the root group
+            if (selectedNode.length == 0) {
+                selectedNode = null;
+            }
+            treeview.append({
+                Text: $("#nodeText").val(),
+                Icon: $("#nodeIcon").val(),
+                Link: $("#nodeLink").val()
+            }, selectedNode);
+        });
+
+        $(document).on('click', '#editNode', function(e) {
+            e.preventDefault();
+            var selectedNode = treeview.select();
+            console.log(selectedNode);
+            var item = treeview.dataItem(selectedNode);
+            item.set("Text", $("#nodeText").val());
+            item.set("Link", $("#nodeLink").val());
+            item.set("Icon", $("#nodeIcon").val());
+        });
+
+        $(document).ready(function() {
+            //$("#li-setting, #li-access-rights-list").addClass('m-menu__item--active m-menu__item--open');
+            const dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("RoleRecords", "AccessRights")',
+                        dataType: "json",
+                        type: 'GET'
+                    },
+                    parameterMap: function(options) {
+                        return `models=${kendo.stringify(options)}`;
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total"
+                },
+                error: function(e) {
+                    alert(e.errorThrown);
+                },
+                pageSize: 10,
+                sort: { field: "Id", dir: "desc" },
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            });
+
+            $("#report-grid").kendoGrid({
+                dataSource: dataSource,
+                autoBind: true,
+                scrollable: false,
+                pageable: {
+                    buttonCount: 5,
+                    refresh: true,
+                    input: true,
+                    pageSizes: [5, 10, 15, 20, 25,50,100],
+                    info: true
+                },
+                sortable: true,
+                filterable: {
+                    mode: "menu"
+                },
+                toolbar: [
+                    {
+                        template:
+                            '<button class="k-button" data-title="ثبت نقش جدید" data-link="@Url.Action(nameof(AccessRightsController.AddDetail))"><span class="k-icon k-i-add"></span>ثبت نقش جدید</button>'
+                    }
+                ],
+                reorderable: true,
+                columnMenu: true,
+                columns: [
+                    { field: "Id",  hidden:true },
+                    { field: "Name", title: "عنوان", media: "(min-width: 450px)" },
+                    {
+                        title: "جزئیات",
+                        template: kendo.template($("#responsive-column-template").html()),
+                        media: "(max-width: 450px)"
+                    },
+                    {
+                        title: "عملیات",
+                        template:
+                            `<button class="k-button" data-link="@Url.Action(nameof(AccessRightsController.GetDetail))/#:Id#" data-title="ویرایش نقش #:Name#"><span class="k-icon k-i-edit"></span>ویرایش</button>`
+                    }
+                ]
+            });
+        });
+    </script>
+    <script id="responsive-column-template" type="text/x-kendo-template">
+        <strong>عنوان نقش</strong>
+        <p class="col-template-val">#:data.Name#</p>
+    </script>
+}

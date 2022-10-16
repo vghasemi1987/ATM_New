@@ -1,0 +1,302 @@
+﻿@using Web.Core.TransactionDetails;
+@using DomainEntities.TransactionFileAggregate;
+@using Infrastructure.Data.ApplicationUserAggregate;
+@using ApplicationCommon;
+
+@model int?
+
+@{
+    if (Model>0)
+    {
+        ViewBag.Title = "لیست تراکنش های فزونی";
+    }
+    else
+    {
+        ViewBag.Title = "فرایند تراکنش های فزونی";
+    }
+
+}
+
+<div class="m-portlet">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    @*لیست تراکنش های فزونی ثبت شده در سامانه*@
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //$("#li-setting, #li-department-list").addClass('m-menu__item--active m-menu__item--open');
+            const dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action(nameof(TransactionDetailsController.GetRecords), new { fileId=Model })',
+                        dataType: "json",
+                        type: 'GET'
+                    },
+                    parameterMap: function(options) {
+                        return `models= ${kendo.stringify(options)}`;
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total"
+                },
+                error: function(e) {
+                    alert(e.errorThrown);
+                },
+                pageSize: 10,
+                sort: { field: "Date", dir: "desc" },
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            });
+
+            var grid = $("#report-grid").kendoGrid({
+                dataSource: dataSource,
+                autoBind: true,
+                //detailInit: detailInit,
+                scrollable: false,
+                pageable: {
+                    buttonCount: 5,
+                    refresh: true,
+                    input: true,
+                    pageSizes: [5, 10, 15, 20, 25, 50, 100],
+                    info: true
+                },
+                sortable: true,
+                filterable: {
+                    mode: "menu",
+                    messages: {
+                        selectedItemsFormat: "{0} آیتم انتخاب شده",
+                        search: "جستجو",
+                        checkAll: "انتخاب همه",
+                        clear: "لغو",
+                        filter: "اعمال"
+                    }
+                },
+                //filter: { field: "FileId", operator: "eq", value: e.data.Id }
+                toolbar: [{
+                    template: kendo.template($("#toolbar-header-template").html())
+                }],
+                reorderable: true,
+                columnMenu: true,
+                columns: [
+                    {
+                        template: '<input type="checkbox" #: IsRefahi ||StatusId==4 ? "disabled" : "" #  class="checkbox" />',
+                        headerTemplate: "<input type='checkbox' id='chkSelectAll' onclick='checkAll(this)'/>"
+                    },
+                    { field: "Id", hidden:true },
+                    { field: "Date", template: "#=Date.match(/.{1,2}/g).join('/')#", title: "تاریخ", media: "(min-width: 450px)" },
+                    { field: "Time", template: "#=Time.match(/.{1,2}/g).join(':')#", title: "ساعت", media: "(min-width: 450px)" },
+                    { field: "DocumentCode", title: "شماره سند", media: "(min-width: 450px)" },
+                    { field: "TransactionNumber", title: "شماره تراکنش", media: "(min-width: 450px)" },
+                    { field: "AtmCode", title: "کد دستگاه", media: "(min-width: 450px)" },
+                    { field: "CardNumber", title: "شماره کارت", media: "(min-width: 450px)" },
+                    { field: "Amount", title: "مبلغ", format: "{0:#,##}", media: "(min-width: 450px)" },
+                    { field: "IsRefahi", title: "رفاه کارت است؟", attributes:{ class:"text-center" },
+                        template: '<input type="checkbox" #: IsRefahi ? "checked=checked" : "" # disabled />'
+                    },
+                    { field: "StatusTitle", title: "وضعیت", media: "(min-width: 450px)", filterable: { multi: true, search: true } },
+                                        {
+                        field: "DocumentPrintedDate", title: "تاریخ برداشت تجمعی", media: "(min-width: 850px)", attributes:{ class:"text-center" },
+                        template: kendo.template($("#DocumentPrintedDateTemplate").html()), editor: addMdDateTimePicker,
+                        filterable: {
+                            ui: function (element) {
+                                var name = $(element[0]).data("bind").replace("[", "").replace("]", "").replace(".", "")
+                                    .replace(" ", "").replace(":", "");
+                                $(element[0])
+                                    .addClass("k-input k-textbox")
+                                    .attr("style", "width:100%")
+                                    .attr("data-mddatetimepicker", "true")
+                                    .attr("data-englishnumber", "true")
+                                    .attr("data-trigger", "click")
+                                    .attr("data-targetselector", "#" + name)
+                                    .attr("data-fromdate", "true")
+                                    .attr("data-enabletimepicker", "false")
+                                    .attr("data-placement", "right")
+                                    .attr("name", name)
+                                    .attr("id", name);
+                                EnableMdDateTimePickers();
+                            }
+                        }
+                    },
+
+{
+                        field: "ShetabiPrintedDate", title: "تاریخ ارسال شتابی", media: "(min-width: 850px)", attributes:{ class:"text-center" },
+                        template: kendo.template($("#ShetabiPrintedDateTemplate").html()), editor: addMdDateTimePicker,
+                        filterable: {
+                            ui: function (element) {
+                                var name = $(element[0]).data("bind").replace("[", "").replace("]", "").replace(".", "")
+                                    .replace(" ", "").replace(":", "");
+                                $(element[0])
+                                    .addClass("k-input k-textbox")
+                                    .attr("style", "width:100%")
+                                    .attr("data-mddatetimepicker", "true")
+                                    .attr("data-englishnumber", "true")
+                                    .attr("data-trigger", "click")
+                                    .attr("data-targetselector", "#" + name)
+                                    .attr("data-fromdate", "true")
+                                    .attr("data-enabletimepicker", "false")
+                                    .attr("data-placement", "right")
+                                    .attr("name", name)
+                                    .attr("id", name);
+                                EnableMdDateTimePickers();
+                            }
+                        }
+                    },
+
+                   { field: "BranchName", title: "شعبه کاربر", media: "(min-width: 450px)" },
+                    { field: "BranchCode", title: "کد شعبه کاربر کاربر", media: "(min-width: 450px)" }, @**@
+                    { field: "UserDescription", title: "توضیحات کاربر", media: "(min-width: 450px)" }
+
+                    @*,
+                    {
+                        title: "عملیات",
+                        template:
+                            `<button class="k-button" data-title="جزئیات #:Id#" data-link="@Url.Action("")/#:Id#"><span class="k-icon k-i-edit"></span>جزئیات</button>`
+                    }*@
+                ]
+            }).data("kendoGrid");
+            grid.table.on("click", ".checkbox" , selectRow);
+
+
+        @*function detailInit(e) {
+            $("<div/>").appendTo(e.detailCell).kendoGrid({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetTransactionWorkFollow", "WorkFollows")',
+                            dataType: "json",
+                            type: 'GET'
+                        },
+                        parameterMap: function(options) {
+                            return `models=${kendo.stringify(options)}`;
+                        }
+                    },
+                    schema: {
+                        data: "Data",
+                        total: "Total"
+                    },
+                    serverPaging: true,
+                    serverSorting: true,
+                    serverFiltering: true,
+                    pageSize: 10,
+                    filter: { field: "FileDetailId", operator: "eq", value: e.data.Id }
+                },
+                scrollable: false,
+                sortable: true,
+                pageable: true,
+                columns: [
+                    { field: "Status", title:"(وضعیت)" },
+                    { field: "UserName", title:"(نام کاربر)" },
+                    { field: "UpdateDateTime", title: "تاریخ", template: "#=UpdateDateTime!=null ? moment(UpdateDateTime).format('jYYYY/jMM/jDD HH:mm:ss'):'---'#" },
+                ]
+            });
+        }*@
+        });
+
+                function addMdDateTimePicker(container, options) {
+            var fieldValue = options.model[options.field];
+            var persianDate = fieldValue ? moment(fieldValue).format('jYYYY/jMM/jDD') : "";
+
+            var input = $('<div dir="ltr" class="input-group">' +
+                '<div class="input-group-addon" data-name="datepicker1" data-mddatetimepicker="true" data-trigger="click" data-targetselector="#' +
+                options.field +
+                '" data-fromdate="false" data-enabletimepicker="false" data-englishnumber="true" data-placement="left">' +
+                '<span class="glyphicon glyphicon-calendar"></span>' +
+                '</div>' +
+                '<input type="text" value="' +
+                persianDate +
+                '" class="form-control" id="' +
+                options.field +
+                '" placeholder="از تاریخ" data-mddatetimepicker="true" data-trigger="click" data-targetselector="#' +
+                options.field +
+                '" data-englishnumber="true"  data-fromdate="true" data-enabletimepicker="false" data-placement="right" />' +
+                '</div>');
+            input.appendTo(container);
+
+            EnableMdDateTimePickers();
+
+            $('#' + options.field).change(function () {
+                var selectedPersianDate = $(this)[0].value;
+                if (selectedPersianDate) {
+                    var gregorianDate = moment(selectedPersianDate, 'jYYYY/jMM/jDD').format('YYYY-MM-DD');
+                    options.model.set(options.field, gregorianDate);
+                }
+            });
+
+            $('#' + options.field).blur(function () {
+                $('[data-name="datepicker1"]').MdPersianDateTimePicker('hide');
+            });
+            options != undefined
+        }
+
+    </script>
+    <script id="toolbar-header-template" type="text/x-kendo-template">
+        #if('@User.IsInRole(RolesEnum.Operator.DescriptionAttr())' == 'True'){#
+        <button class="k-button" id="changeState" data-url="@Url.Action(nameof(TransactionDetailsController.SendToState), "TransactionDetails", new { Status = EnumStatus.SendToBranchBoss })">
+            <span class="k-icon k-i-upload"></span>ارسال به مدیر شعبه
+        </button>
+        #}#
+        #if('@User.IsInRole(RolesEnum.BranchBoss.DescriptionAttr())' == 'True'){#
+        <button class="k-button" id="changeState" data-url="@Url.Action(nameof(TransactionDetailsController.SendToState), "TransactionDetails", new { Status = EnumStatus.SendToAccounting })">
+            <span class="k-icon k-i-upload"></span>ارسال حسابداری
+        </button>
+        <button class="k-button" id="changeState" data-url="@Url.Action(nameof(TransactionDetailsController.SendToState), "TransactionDetails", new { Status = EnumStatus.BackToOperator })">
+            <span class="k-icon k-i-upload"></span>بازگشت به متصدی
+        </button>
+        #}#
+        #if('@User.IsInRole(RolesEnum.Accounting.DescriptionAttr())' == 'True'){#
+        <!--<button class="k-button" id="changeState" data-url="@Url.Action(nameof(TransactionDetailsController.SendToState), "TransactionDetails", new { Status = EnumStatus.FinalRegistration })">
+        <span class="k-icon k-i-upload"></span>تایید نهایی
+        </button>-->
+        <button class="k-button" id="changeState" data-url="@Url.Action(nameof(TransactionDetailsController.SendToState), "TransactionDetails", new { Status = EnumStatus.BackToBranchBoss })">
+            <span class="k-icon k-i-upload"></span>بازگشت به رئیس شعبه
+        </button>
+        #}#
+    </script>
+    <script id="DocumentPrintedDateTemplate" type="text/x-kendo-template">
+        #if( DocumentPrintedDate ) {#
+        #:moment(DocumentPrintedDate).format('jYYYY/jMM/jDD')#
+        #}#
+    </script>
+    <script id="ShetabiPrintedDateTemplate" type="text/x-kendo-template">
+        #if( ShetabiPrintedDate ) {#
+        #:moment(ShetabiPrintedDate).format('jYYYY/jMM/jDD')#
+        #}#
+
+    </script>
+    <script>
+        function checkAll(ele) {
+            var state = $(ele).is(':checked');
+            var grid = $('#report-grid').data('kendoGrid');
+            $.each(grid.dataSource.view(), function () {
+                checkedIds[this['Id']] = state;
+            });
+            $.each(grid.tbody.find(".checkbox"), function () {
+                console.log(this)
+                if (!($(this).prop('disabled'))) {
+                    $(this).prop("checked", state);
+                }
+
+
+            });
+        }
+    </script>
+    @*<script id="responsive-column-template" type="text/x-kendo-template">
+            <strong>عنوان</strong>
+            <p class="col-template-val">#:data.Name#</p>
+        </script>*@
+}

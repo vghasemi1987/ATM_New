@@ -1,0 +1,105 @@
+﻿@model Web.Core.UserManagement.ViewModels.UserFormViewModel
+
+<form asp-controller="UserManagement" asp-action="AddDetail" enctype="multipart/form-data" id="frmUserDetail" method="post">
+    <div class="modal-body">
+        <div class="form-group">
+            <label asp-for="UserName" class="control-label"></label>
+            <input asp-for="UserName" class="form-control" />
+            <span asp-validation-for="UserName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="FirstName" class="control-label"></label>
+            <input asp-for="FirstName" class="form-control" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="LastName" class="control-label"></label>
+            <input asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="PersonnelCode" class="control-label"></label>
+            <input asp-for="PersonnelCode" class="form-control" />
+            <span asp-validation-for="PersonnelCode" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="BranchId" class="control-label"></label>
+            <select asp-for="BranchId" asp-items="Model.BranchList" title="لطفا انتخاب کنید..." data-live-search="true"
+                    class="form-control selectpicker show-tick" data-size="4">
+                <option value="">انتخاب کنید ...</option>
+            </select>
+            <span asp-validation-for="BranchId" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="PhoneNumber" class="control-label"></label>
+            <input asp-for="PhoneNumber" class="form-control" />
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="SelectedRole" class="control-label"></label>
+            <select asp-for="SelectedRole" asp-items="Model.RolesList" class="form-control"></select>
+            <span asp-validation-for="SelectedRole" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="LockState" class="control-label"></label>
+            <select asp-for="LockState" class="form-control">
+                <option value="">انتخاب کنید ...</option>
+                <option value="True">دسترسی فعال</option>
+                <option value="False">دسترسی غیرفعال</option>
+            </select>
+            <span asp-validation-for="LockState" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="DisabledDate" class="control-label"></label>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text cursor-pointer" id="btnDisabledDate"><i class="far fa-calendar-alt"></i></span>
+                </div>
+                <input asp-for="DisabledDate" class="form-control" />
+            </div>
+            <span class="help-block"><span asp-validation-for="DisabledDate" class="text-danger"></span></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Password" class="control-label"></label>
+            <input asp-for="Password" class="form-control" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ConfirmPassword" class="control-label"></label>
+            <input asp-for="ConfirmPassword" class="form-control" />
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        </div>
+        @if (Model.Picture != null)
+        {
+            <div class="form-group">
+                <div class="text-center">
+                    <img class="img-circle" src='/uploads/user-image/@(Model.Picture ?? "no_image.png")' width="120" height="120" alt="Image" />
+                    <input asp-for="Picture" />
+                </div>
+            </div>
+        }
+        <div class="form-group">
+            <label asp-for="PostedFile" class="control-label"></label>
+            <input asp-for="PostedFile" type="file" />
+            <span asp-validation-for="PostedFile" class="text-danger"></span>
+        </div>
+        <input asp-for="UserId" />
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" data-dismiss="modal">خروج</button>
+        @{ var url = Model.UserId > 0 ? Url.Action("EditDetail", "UserManagement") : Url.Action("AddDetail", "UserManagement");}
+        <button onclick="event.preventDefault();saveAndupdateFile($(this.form), '@url');"
+                class="btn btn-primary" perform="action">
+            ذخیره
+        </button>
+    </div>
+</form>
+<script type="text/javascript">
+    $('#btnDisabledDate').MdPersianDateTimePicker({
+        targetTextSelector: '#DisabledDate',
+        textFormat: 'yyyy/MM/dd',
+        englishNumber: true,
+        enableTimePicker: false
+    });
+</script>

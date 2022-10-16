@@ -1,0 +1,165 @@
+﻿@using Web.Core.ATMUnknown;
+@using DomainEntities.TransactionFileAggregate;
+@using Infrastructure.Data.ApplicationUserAggregate;
+@using ApplicationCommon;
+@{
+    ViewBag.Title = "لیست تراکنش های بلاتکلیف";
+}
+
+<div class="m-portlet">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    لیست تراکنش های بلاتکلیف
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //$("#li-setting, #li-department-list").addClass('m-menu__item--active m-menu__item--open');
+            const dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action(nameof(ATMUnknownController.GetRecords))',
+                        dataType: "json",
+                        type: 'GET'
+                    },
+                    parameterMap: function(options) {
+                        return `models= ${kendo.stringify(options)}`;
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total"
+                },
+                error: function(e) {
+                    alert(e.errorThrown);
+                },
+                pageSize: 10,
+                sort: { field: "Id", dir: "asc" },
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            });
+
+            var grid = $("#report-grid").kendoGrid({
+                dataSource: dataSource,
+                autoBind: true,
+               // detailInit: detailInit,
+                scrollable: false,
+                pageable: {
+                    buttonCount: 5,
+                    refresh: true,
+                    input: true,
+                    pageSizes: [5, 10, 15, 20, 25, 50, 100],
+                    info: true
+                },
+                sortable: true,
+                filterable: {
+                    mode: "menu",
+                    messages: {
+                        selectedItemsFormat: "{0} آیتم انتخاب شده",
+                        search: "جستجو",
+                        checkAll: "انتخاب همه",
+                        clear: "لغو",
+                        filter: "اعمال"
+                    }
+                },
+                //filter: { field: "FileId", operator: "eq", value: e.data.Id }
+                toolbar: [{
+                    template: kendo.template($("#toolbar-header-template").html())
+                }],
+                reorderable: true,
+                columnMenu: true,
+                columns: [
+                    { template: '<input type="checkbox"  class="checkbox" />' },
+                    { field: "Id", hidden:true },
+                    { field: "ATM", title: "شماره سریال دستگاه", media: "(min-width: 450px)" },
+                    { field: "ATMAtletCode", title: "شماره اتلت دستگاه", media: "(min-width: 450px)" },
+                    { field: "TransactionNumber", title: "شماره تراکنش", media: "(min-width: 450px)" },
+                    { field: "TransactionDate", title: "تاریخ تراکنش", media: "(min-width: 450px)" },
+                    { field: "TransactionTime", title: "ساعت تراکنش", media: "(min-width: 450px)" },
+                    { field: "TransactionAmount", title: "مبلغ تراکنش", media: "(min-width: 450px)" },
+                    { field: "CardNumber", title: "شماره کارت", media: "(min-width: 450px)" },
+                    { field: "BranchCode", title: "کد شعبه", media: "(min-width: 450px)" },
+                    { field: "CardType", title: "نوع کارت", media: "(min-width: 450px)" },
+                    { field: "StatusWorkfollowTitle", title: "وضعیت فرایند", media: "(min-width: 450px)" },
+                    { field: "UserDescription", title: "توضیحات", media: "(min-width: 450px)" },
+                    { field: "Status", title: "وضعیت", media: "(min-width: 450px)" },
+                    { field: "DeterminationDate", title: "تاریخ تایین تکلیف", media: "(min-width: 450px)" },
+                ]
+            }).data("kendoGrid");
+            grid.table.on("click", ".checkbox" , selectRow);
+
+
+        @*function detailInit(e) {
+            $("<div/>").appendTo(e.detailCell).kendoGrid({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetTransactionWorkFollow", "WorkFollows")',
+                            dataType: "json",
+                            type: 'GET'
+                        },
+                        parameterMap: function(options) {
+                            return `models=${kendo.stringify(options)}`;
+                        }
+                    },
+                    schema: {
+                        data: "Data",
+                        total: "Total"
+                    },
+                    serverPaging: true,
+                    serverSorting: true,
+                    serverFiltering: true,
+                    pageSize: 10,
+                    filter: { field: "FileDetailId", operator: "eq", value: e.data.Id }
+                },
+                scrollable: false,
+                sortable: true,
+                pageable: true,
+                columns: [
+                    { field: "Status", title:"(وضعیت)" },
+                    { field: "UserName", title:"(نام کاربر)" },
+                    { field: "UpdateDateTime", title: "تاریخ", template: "#=UpdateDateTime!=null ? moment(UpdateDateTime).format('jYYYY/jMM/jDD HH:mm:ss'):'---'#" },
+                ]
+            });
+        }*@
+        });
+    </script>
+    <script id="toolbar-header-template" type="text/x-kendo-template">
+        #if('@User.IsInRole(RolesEnum.Operator.DescriptionAttr())' == 'True'){#
+            <button class="k-button" id="changeState" data-url="@Url.Action(nameof(ATMUnknownController.SendToState), "ATMUnknown", new { Status = EnumStatus.SendToBranchBoss })">
+                <span class="k-icon k-i-upload"></span>ارسال به مدیر شعبه
+            </button>
+            #}#
+            #if('@User.IsInRole(RolesEnum.BranchBoss.DescriptionAttr())' == 'True'){#
+    <button class="k-button" id="changeState" data-url="@Url.Action(nameof(ATMUnknownController.SendToState), "ATMUnknown", new { Status = EnumStatus.FinalRegistration })">
+        @*<span class="k-icon k-i-upload"></span>ارسال حسابداری*@
+        <span class="k-icon k-i-upload"></span>تایید نهایی
+    </button>
+            <button class="k-button" id="changeState" data-url="@Url.Action(nameof(ATMUnknownController.SendToState), "ATMUnknown", new { Status = EnumStatus.BackToOperator })">
+                <span class="k-icon k-i-upload"></span>بازگشت به متصدی
+            </button>
+            #}#
+            #if('@User.IsInRole(RolesEnum.Accounting.DescriptionAttr())' == 'True'){#
+            <button class="k-button" id="changeState" data-url="@Url.Action(nameof(ATMUnknownController.SendToState), "ATMUnknown", new { Status = EnumStatus.FinalRegistration })">
+                <span class="k-icon k-i-upload"></span>تایید نهایی
+            </button>
+            <button class="k-button" id="changeState" data-url="@Url.Action(nameof(ATMUnknownController.SendToState), "ATMUnknown", new { Status = EnumStatus.BackToBranchBoss })">
+                <span class="k-icon k-i-upload"></span>بازگشت به رئیس شعبه
+            </button>
+            #}#
+    </script>
+
+}

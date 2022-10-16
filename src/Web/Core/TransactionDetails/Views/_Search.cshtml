@@ -1,0 +1,50 @@
+﻿@using Web.Core.TransactionDetails.ViewModels;
+@using Web.Core.TransactionDetails;
+@model Web.Core.TransactionDetails.ViewModels.SearchViewModel
+
+    <form asp-controller="TransactionDetails" asp-action="Index" method="get">
+        <div class="modal-body">
+            <div class="form-group">
+                <label asp-for="FromDate" class="control-label"></label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text cursor-pointer" id="btnFromDate"><i class="far fa-calendar-alt"></i></span>
+                    </div>
+                    <input asp-for="FromDate" class="form-control" />
+                </div>
+                <span class="help-block"><span asp-validation-for="FromDate" class="text-danger"></span></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ToDate" class="control-label"></label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text cursor-pointer" id="btnToDate"><i class="far fa-calendar-alt"></i></span>
+                    </div>
+                    <input asp-for="ToDate" class="form-control" />
+                </div>
+                <span class="help-block"><span asp-validation-for="ToDate" class="text-danger"></span></span>
+            </div>
+        </div>
+        <input type="hidden" asp-for="SearchType" />
+        <div class="modal-footer">
+            @{ var url = Model.SearchType == SearchType.ShetabiSearch ? Url.Action(nameof(TransactionDetailsController.GetShetabiRecords)) :
+                       Url.Action(nameof(TransactionDetailsController.GetSumBranchTransaction)); }
+            <button class="btn btn-primary" onclick="event.preventDefault(); reloadData($(this.form),'@url');">
+                جستجو
+            </button>
+        </div>
+    </form>
+<script type="text/javascript">
+    $('#btnFromDate').MdPersianDateTimePicker({
+        targetTextSelector: '#FromDate',
+        textFormat: 'yyyy/MM/dd',
+        englishNumber:true,
+        enableTimePicker:false
+    });
+    $('#btnToDate').MdPersianDateTimePicker({
+        targetTextSelector: '#ToDate',
+        textFormat: 'yyyy/MM/dd',
+        englishNumber:true,
+        enableTimePicker:false
+    });
+</script>

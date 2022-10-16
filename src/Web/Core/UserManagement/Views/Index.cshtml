@@ -1,0 +1,259 @@
+﻿@using Web.Core.UserManagement
+@model Web.Core.UserManagement.ViewModels.SearchViewModel
+@{
+	ViewBag.Title = "لیست کاربران";
+}
+
+<div class="m-portlet">
+	<div class="m-portlet__head">
+		<div class="m-portlet__head-caption">
+			<div class="m-portlet__head-title">
+				<h3 class="m-portlet__head-text">
+					لیست کاربران ثبت شده در سامانه
+				</h3>
+
+			</div>
+		</div>
+	</div>
+	<div class="m-portlet__body">
+		<form>
+			<div id="search">
+				<div class="row row-no-gutters">
+					<div class="form-group col-md-3">
+						<label asp-for="Name" class="control-label"></label>
+						<input asp-for="Name" class="form-control" />
+						<span asp-validation-for="Name" class="text-danger"></span>
+					</div>
+					<div class="form-group col-md-3">
+						<label asp-for="UserName" class="control-label"></label>
+						<input asp-for="UserName" class="form-control" />
+						<span asp-validation-for="UserName" class="text-danger"></span>
+					</div>
+					<div class="form-group col-md-3">
+						<label asp-for="FromDate" class="control-label"></label>
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text cursor-pointer" id="btnFromDate"><i class="far fa-calendar-alt"></i></span>
+							</div>
+							<input asp-for="FromDate" class="form-control" />
+						</div>
+						<span class="help-block"><span asp-validation-for="FromDate" class="text-danger"></span></span>
+					</div>
+					<div class="form-group col-md-3">
+						<label asp-for="ToDate" class="control-label"></label>
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text cursor-pointer" id="btnToDate"><i class="far fa-calendar-alt"></i></span>
+							</div>
+							<input asp-for="ToDate" class="form-control" />
+						</div>
+						<span class="help-block"><span asp-validation-for="ToDate" class="text-danger"></span></span>
+					</div>
+					<div class="form-group col-md-3">
+						<label asp-for="BranchHeadId" class="control-label"></label>
+						<select asp-for="BranchHeadId" asp-items="Model.BranchHeadList" title="لطفا انتخاب کنید..." data-live-search="true"
+								class="form-control selectpicker show-tick" data-size="4" data-url="@Url.Action("GetBranchesByBranchHeadId", "Branches" )"></select>
+						<span asp-validation-for="BranchHeadId" class="text-danger"></span>
+					</div>
+					<div class="form-group col-md-3">
+						<label asp-for="BranchId" class="control-label"></label>
+						<select asp-for="BranchId" asp-items="Model.BranchList" title="لطفا انتخاب کنید..." data-live-search="true"
+								class="form-control selectpicker show-tick" data-size="4"></select>
+						<span asp-validation-for="BranchId" class="text-danger"></span>
+					</div>
+					<div class="form-group col-md-3">
+						<label asp-for="LockState" class="control-label"></label>
+						<select asp-for="LockState" class="form-control">
+							<option value="">انتخاب کنید ...</option>
+							<option value="True">دسترسی فعال</option>
+							<option value="False">دسترسی غیرفعال</option>
+						</select>
+						<span asp-validation-for="LockState" class="text-danger"></span>
+					</div>
+					<div class="form-group col-md-1">
+						@{ var url = Url.Action(nameof(UserManagementController.GetRecords)); }
+						<button class="btn btn-primary" onclick="event.preventDefault(); reloadData($(this.form),'@Url.Action(nameof(UserManagementController.GetRecords))');">
+							جستجو
+						</button>
+					</div>
+
+				</div>
+			</div>
+		</form>
+		<div class="k-rtl">
+			<div id="report-grid"></div>
+		</div>
+	</div>
+</div>
+
+@section scripts{
+	<script type="text/javascript">
+        function reloadData(targetForm, url) {
+            var dSource = $('#report-grid').data('kendoGrid').dataSource;
+            dSource.transport.options.read.url = `${url}?${targetForm.serialize()}`;
+            $('#report-grid').data('kendoGrid').dataSource.read();
+            $('#dataModal').modal('hide');
+        }
+        $(document).ready(function () {
+            $(document).on('change',
+            '#BranchHeadId',
+            function() {
+                var selectedItem = $(this).val();
+                let ddlStates = $("#BranchId");
+                $.ajax({
+                    type: 'GET',
+                    url: $(this).data("url"),
+                    data: { "Id": selectedItem },
+                    success: function(data) {
+                        ddlStates.html('');
+                        ddlStates.append($('<option value="">شعبه را انتخاب کنید...</option>'));
+                        $.each(data,
+                            function(id, option) {
+                                console.log(data.Id);
+                                ddlStates.append($('<option></option>').val(option.Id).html(option.Title));
+                            });
+                       $("#BranchId").selectpicker('refresh');
+                    }
+                });
+            });
+            //$("#li-account").addClass('m-menu__item--active m-menu__item--open');
+            const dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetRecords", "UserManagement")',
+                        dataType: "json",
+                        type: 'GET'
+                    },
+                    parameterMap: function(options) {
+                        return `models=${kendo.stringify(options)}`;
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "Picture": { type: "string" },
+                            "UserName": { type: "string" },
+                            "Name": { type: "string" },
+                            "RegDateTime": { type: "date", validation: { required: true } },
+                            "PhoneNumber": { type: "string" },
+                            "Roles": { type: "string" },
+                            "DisabledDate": { type: "string" },
+                            "LockoutState": { type: "boolean" },
+                            "ParentUserName": { type: "string" }
+                        }
+                    }
+                },
+                error: function(e) {
+                    alert(e.errorThrown);
+                },
+                pageSize: 10,
+                sort: { field: "Id", dir: "desc" },
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            });
+
+            $("#report-grid").kendoGrid({
+                dataSource: dataSource,
+                autoBind: true,
+                scrollable: false,
+                pageable: {
+                    buttonCount: 5,
+                    refresh: true,
+                    input: true,
+                    pageSizes: [5, 10, 15, 20, 25, 50, 100],
+                    info: true
+                },
+                sortable: true,
+                /*filterable: {
+                    mode: "menu",
+                    messages: {
+                        selectedItemsFormat: "{0} آیتم انتخاب شده",
+                        search: "جستجو",
+                        checkAll: "انتخاب همه",
+                        clear: "لغو",
+                        filter: "اعمال"
+                    }
+                },*/
+                toolbar: [{
+
+                    template: kendo.template($("#toolbar-header-template").html())
+                }],
+                reorderable: true,
+                columnMenu: true,
+                columns: [
+                    { field: "Id", hidden:true },
+                    {
+                        template: "<span><img class='img-circle' width='32' height='32' src='/uploads/user-image/#:data.Picture#'/>&nbsp;" +
+                            "#:Name#</span>", field: "Name", title: "نام", width: 200, media: "(min-width: 450px)"
+                    },
+                    { field: "UserName", title: "نام کاربری", attributes: { class: "text-center" } },
+                    { field: "BranchHeadTitle", title: "امور شعب", attributes: { class: "text-center" }},
+                    { field: "BranchHeadCode", title: "کد امور شعب", attributes: { class: "text-center" }},
+                    { field: "BranchTitle", title: "شعبه", attributes: { class: "text-center" }},
+                    { field: "BranchCode", title: "کد شعبه", attributes: { class: "text-center" }},
+                    { field: "RegDateTime", title: "تاریخ و زمان ثبت", attributes: { class: "text-center" },template: kendo.template($("#persianRegDateTimeTemplate").html()),},
+                    { field: "Roles", title: "نقش", media: "(min-width: 450px)" },
+                    //{ field: "DisabledDate", title: "تاریخ غیرفعالسازی", media: "(min-width: 450px)", template: kendo.template($("#persianDisabledDateTemplate").html()),},
+                    {
+                        field: "LockoutState", title: "وضعیت قفل", attributes:{ class:"text-center" } ,
+                        template: '<input type="checkbox" #: LockoutState ? "checked=checked" : "" # disabled />'
+                    },
+                    {
+                        title: "عملیات",
+                        template:
+                            '<button class="k-button" data-title="ویرایش کاربر #:UserName#" data-link="@Url.Action(nameof(UserManagementController.GetDetail))/#:Id#"><span class="k-icon k-i-edit"></span>ویرایش</button>'
+                    },
+                    {
+                        title: "جزئیات",
+                       template: kendo.template($("#responsive-column-template").html()),
+                       media: "(max-width: 450px)"
+                    }
+                ]
+            });
+        });
+	</script>
+	<script id="persianRegDateTimeTemplate" type="text/x-kendo-template">
+		#if( RegDateTime ) {#
+		#:moment(RegDateTime).format('jYYYY/jMM/jDD')#
+		#}#
+	</script>
+	<script id="persianDisabledDateTemplate" type="text/x-kendo-template">
+		#if( DisabledDate ) {#
+		#:moment(DisabledDate).format('jYYYY/jMM/jDD')#
+		#}#
+
+	</script>
+	<script id="responsive-column-template" type="text/x-kendo-template">
+		<strong>نام کاربری</strong>
+		<p class="col-template-val">#:data.UserName#</p>
+		<strong>نام</strong>
+		<p class="col-template-val">#:data.Name#</p>
+		<strong>تاریخ ثبت</strong>
+		<p class="col-template-val">#:moment(data.RegDateTime).format('jYYYY/jMM/jDD')#</p>
+		<strong>تلفن</strong>
+		<p class="col-template-val">#:data.PhoneNumber#</p>
+		<strong>نقش</strong>
+		<p class="col-template-val">#:data.Roles#</p>
+	</script>
+	<script id="toolbar-header-template" type="text/x-kendo-template">
+        <button class="k-button" data-title="ثبت کاربر جدید" data-link="@Url.Action(nameof(UserManagementController.GetDetail))"><span class="k-icon k-i-add"></span>کاربر جدید</button>
+	</script>
+	<script type="text/javascript">
+		$('#btnFromDate').MdPersianDateTimePicker({
+			targetTextSelector: '#FromDate',
+			textFormat: 'yy/MM/dd',
+			englishNumber: true,
+			enableTimePicker: false
+		});
+		$('#btnToDate').MdPersianDateTimePicker({
+			targetTextSelector: '#ToDate',
+			textFormat: 'yy/MM/dd',
+			englishNumber: true,
+			enableTimePicker: false
+		});
+	</script>
+}

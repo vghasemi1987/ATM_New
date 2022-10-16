@@ -1,0 +1,166 @@
+﻿@{
+    ViewBag.Title = "لیست اعلانات";
+}
+
+<div class="m-portlet">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    لیست اعلانات ثبت شده در سامانه
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //$("#home").addClass('m-menu__item--active m-menu__item--open');
+            const dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetRecords", "Notification")',
+                        dataType: "json",
+                        type: 'GET'
+                    },
+                    parameterMap: function(options) {
+                        return 'models='+ kendo.stringify(options);
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total"
+                },
+                error: function(e) {
+                    alert(e.errorThrown);
+                },
+                pageSize: 10,
+                sort: { field: "Id", dir: "desc" },
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            });
+
+            $("#report-grid").kendoGrid({
+                dataSource: dataSource,
+                autoBind: true,
+                scrollable: false,
+                pageable: {
+                    buttonCount: 5,
+                    refresh: true,
+                    input: true,
+                    pageSizes: [5, 10, 15, 20, 25, 50, 100],
+                    info: true
+                },
+                sortable: true,
+                filterable: {
+                    mode: "menu"
+                },
+                reorderable: true,
+                columnMenu: true,
+                columns: [
+                    { field: "Id", hidden:true },
+                    { field: "Name", title: "ایجاد شده", media: "(min-width: 450px)" },
+                    { field: "Title", title: "عنوان", media: "(min-width: 450px)" },
+                    { field: "Text", title: "متن", media: "(min-width: 450px)" },
+                    {
+                        field: "EntryDateTime", title: "تاریخ و زمان ثبت", media: "(min-width: 850px)",
+                        template: kendo.template($("#persianDateTemplate").html()), editor: addMdDateTimePicker,
+                        filterable: {
+                            ui: function(element) {
+                                var name = $(element[0]).data("bind").replace("[", "").replace("]", "").replace(".", "")
+                                    .replace(" ", "").replace(":", "");
+                                $(element[0])
+                                    .addClass("k-input k-textbox")
+                                    .attr("style", "width:100%")
+                                    .attr("data-mddatetimepicker", "true")
+                                    .attr("data-englishnumber", "true")
+                                    .attr("data-trigger", "click")
+                                    .attr("data-targetselector", "#" + name)
+                                    .attr("data-fromdate", "true")
+                                    .attr("data-enabletimepicker", "false")
+                                    .attr("data-placement", "right")
+                                    .attr("name", name)
+                                    .attr("id", name);
+                                EnableMdDateTimePickers();
+                            }
+                        }
+                    },
+                    {
+                        title: "جزئیات",
+                        template: kendo.template($("#responsive-column-template").html()),
+                        media: "(max-width: 450px)"
+                    },
+                    {
+                        title: "عملیات",
+                        template:
+                            '<a class="k-button" data-url="@Url.Action("SelectedItem", "Notification")/#:Id#"><span class="k-icon k-i-exe"></span>جزئیات</a>'
+                    }
+                ]
+            });
+        });
+
+        function addMdDateTimePicker(container, options) {
+            var fieldValue = options.model[options.field];
+            var persianDate = fieldValue ? moment(fieldValue).format('jYYYY/jMM/jDD') : "";
+
+            var input = $('<div dir="ltr" class="input-group">' +
+                '<div class="input-group-addon" data-name="datepicker1" data-mddatetimepicker="true" data-trigger="click" data-targetselector="#' +
+                options.field +
+                '" data-fromdate="false" data-enabletimepicker="false" data-englishnumber="true" data-placement="left">' +
+                '<span class="glyphicon glyphicon-calendar"></span>' +
+                '</div>' +
+                '<input type="text" value="' +
+                persianDate +
+                '" class="form-control" id="' +
+                options.field +
+                '" placeholder="از تاریخ" data-mddatetimepicker="true" data-trigger="click" data-targetselector="#' +
+                options.field +
+                '" data-englishnumber="true"  data-fromdate="true" data-enabletimepicker="false" data-placement="right" />' +
+                '</div>');
+            input.appendTo(container);
+
+            EnableMdDateTimePickers();
+
+            $('#' + options.field).change(function() {
+                var selectedPersianDate = $(this)[0].value;
+                if (selectedPersianDate) {
+                    var gregorianDate = moment(selectedPersianDate, 'jYYYY/jMM/jDD').format('YYYY-MM-DD');
+                    options.model.set(options.field, gregorianDate);
+                }
+            });
+
+            $('#' + options.field).blur(function() {
+                $('[data-name="datepicker1"]').MdPersianDateTimePicker('hide');
+            });
+        }
+    </script>
+    <script id="persianDateTemplate" type="text/x-kendo-template">
+        #if( EntryDateTime ) {#
+        #:moment(EntryDateTime).format('jYYYY/jMM/jDD')#
+        #}#
+    </script>
+
+    <script id="responsive-column-template" type="text/x-kendo-template">
+        <strong>ایجاد شده</strong>
+        <p class="col-template-val">#:data.Name#</p>
+
+        <strong>عنوان</strong>
+        <p class="col-template-val">#:data.Title#</p>
+
+        <strong>متن</strong>
+        <p class="col-template-val">#:data.Text#</p>
+
+        <strong>تاریخ</strong>
+        <p class="col-template-val">#:moment(data.EntryDateTime).format('jYYYY/jMM/jDD')#</p>
+    </script>
+}
+
+

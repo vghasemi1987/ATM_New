@@ -1,0 +1,132 @@
+﻿@model Web.Core.UserManagement.ViewModels.RoleViewModel
+
+<form asp-controller="AccessRights" asp-action="AddDetail" id="frmRoleDetail" method="post">
+    <div class="modal-body">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#access">دسترسی ها</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#menu">منو</a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane container active" id="access">
+                <div class="row">
+                    <input asp-for="Id" />
+                    <div class="form-group col-md-12">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label asp-for="SelectedAccess" class="control-label"></label>
+                    </div>
+                    <label class="control-label">انتخاب همه <input type="checkbox" id="selectall"></label>
+
+                    <div class="form-group col-md-12" style="margin-bottom: 20px; padding: 5px">
+                        @foreach (var controller in Model.ControllerInfos)
+                        {
+                            <div class="m--margin-bottom-10" style="font-weight: bold">@controller.DisplayName</div>
+                            if (controller.Actions.Any())
+                            {
+                                foreach (var action in controller.Actions)
+                                {
+                                    <div class="col-md-3">
+                                        <label style="padding-left: 10px">
+                                            <input type="checkbox" name="SelectedAccess" value='@($"{action.Id}")'
+                                                   @if (Model.SelectedAccess.Contains($"{action.Id}")) { <text> checked</text> } /> @action.DisplayName
+                                            </label>
+                                        </div>
+                                    }
+                                }
+                            }
+                    </div>
+                </div>
+
+            </div>
+            <div class="tab-pane container fade" id="menu">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div id="treeView"></div>
+                        <script id="treeview-template" type="text/kendo-ui-template">
+                            <i class="#:item.Icon#"></i>&nbsp;
+                            <span class="menu-font">#: item.Text #</span>
+                            # if (!item.Items) { #
+                                &nbsp;<a class='far fa-trash-alt' href='\#'></a>
+                            # } #
+                        </script>
+                    </div>
+                    <!-- edit form -->
+                    <div class="col-md-7">
+                        <h4>ویرایش و افزودن</h4>
+                        <div class="form-group">
+                            <label class="control-label">عنوان</label>:
+                            <input id="nodeText" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">لینک</label>:
+                            <input id="nodeLink" style="direction:ltr" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">آیکن</label>:
+                            <input id="nodeIcon" style="direction:ltr" class="form-control" />
+                        </div>
+                        <div class="form-group-lg m--padding-10">
+                            <button class="btn btn-primary" perform="action" id="appendNodeToSelected">افزودن گره</button>
+                            <button class="btn btn-primary" perform="action" id="editNode">ویرایش</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">خروج</button>
+            @{ var url = Model.Id > 0 ? Url.Action("EditDetail", "AccessRights") : Url.Action("AddDetail", "AccessRights");}
+            <button onclick="event.preventDefault(); appendJsonMenu(); saveAndupdate($(this.form), '@url');" type="button" class="btn btn-primary">ذخیره</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    $('.case').on('change', function () {
+        if ($(".case").length == $(".case:checked").length) {
+            $('#selectall').prop('checked', "checked");
+        } else {
+            $("#selectall").removeAttr("checked");
+        }
+    });
+    $('#selectall').on('click', function () {
+        $('input:checkbox').prop('checked', this.checked);
+    });
+    var objectData = new kendo.data.HierarchicalDataSource({
+        data: @Html.Raw(Model.JsonMenu),
+        schema: {
+            model: {
+                //id: "Id",
+                children: "Items",
+            }
+        },
+    });
+
+    var treeview = $("#treeView").kendoTreeView({
+        loadOnDemand: false,
+        template: kendo.template($("#treeview-template").html()),
+        dataSource: objectData,
+        dragAndDrop: true,
+        select: onSelect,
+    }).data("kendoTreeView");
+
+    $(document).on("click", ".fa-trash-alt", function (e) {
+        e.preventDefault();
+        treeview.remove($(this).closest(".k-item"));
+    });
+
+    function onSelect(e) {
+        // this refers to the TreeView object
+        var dataItem = this.dataItem(e.node);
+        $("#nodeText").val(dataItem.Text);
+        $("#nodeLink").val(dataItem.Link);
+        $("#nodeIcon").val(dataItem.Icon);
+    }
+</script>

@@ -1,0 +1,59 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <title>سامانه مدیریت | @ViewData["Title"]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
+    <environment names="Development">
+        <link href="~/fonts/fonts-fa.css" asp-append-version="true" rel="stylesheet" />
+        <link href="~/css/ui-theme/vendors.bundle.rtl.css" rel="stylesheet" />
+        <link href="~/css/ui-theme/style.bundle.rtl.css" rel="stylesheet" />
+        <link href="~/css/ui-theme/layout-style.css" rel="stylesheet" />
+    </environment>
+    <environment names="Production">
+        @*<link href="~/css/login.min.css" asp-append-version="true" rel="stylesheet" />*@
+        <link href="~/fonts/fonts-fa.css" asp-append-version="true" rel="stylesheet" />
+        <link href="~/css/ui-theme/vendors.bundle.rtl.css" rel="stylesheet" />
+        <link href="~/css/ui-theme/style.bundle.rtl.css" rel="stylesheet" />
+        <link href="~/css/ui-theme/layout-style.css" rel="stylesheet" />
+    </environment>
+    <!--end::Global Theme Styles -->
+    <link rel="shortcut icon" href="~/favicon.ico" />
+    @RenderSection("styles", false)
+</head>
+<body class="m--skin- m-header--fixed m-header--fixed-mobile m-aside-left--enabled m-aside-left--skin-dark m-aside-left--fixed m-aside-left--offcanvas m-footer--push m-aside--offcanvas-default">
+    <div class="m-grid m-grid--hor m-grid--root m-page">
+        <div class="m-grid__item m-grid__item--fluid m-grid m-grid--hor m-login m-login--signin m-login--2 m-login-2--skin-1" id="m_login" style="background-image: url(/images/ui-theme/login-bg-Gray.jpg);">
+            <div class="m-grid__item m-grid__item--fluid m-login__wrapper">
+                <div class="m-login__container">
+                    <div class="m-login__logo">
+                        @*<a href="#">*@
+                        @*<img src="~/images/ui-theme/App-Sign-Refah.png" style="width:240px; height:148px" />*@
+                        <img src="~/images/ui-theme/App-Sign-Refah.png" style="width:240px; height:148px" />
+                        @*<img src="../../../assets/app/media/img/logos/logo-1.png">*@
+                        @*</a>*@
+                    </div>
+                    @RenderBody()
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <environment names="Development">
+        <script src="~/js/ui-theme/vendors.bundle.js"></script>
+        <script src="~/js/ui-theme/scripts.bundle.js"></script>
+        <script src="~/js/ui-theme/login.js"></script>
+        <script src="~/js/custom/custom.js"></script>
+    </environment>
+    <environment names="Production">
+        <script src="~/js/login.min.js"></script>
+    </environment>
+    
+    @RenderSection("scripts", required: false)
+</body>
+</html>

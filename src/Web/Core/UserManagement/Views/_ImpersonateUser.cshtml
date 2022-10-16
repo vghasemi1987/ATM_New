@@ -1,0 +1,21 @@
+﻿@model Web.Core.UserManagement.ViewModels.ImpersonateUserViewModel
+
+<form asp-controller="UserManagement" asp-action="ImpersonateUser" id="frmImpersonateUser" method="post">
+    <div class="modal-body">
+        <div class="container">
+            <div class="form-group">
+                <label asp-for="UserId" class="control-label"></label>
+                <select asp-for="UserId" asp-items="Model.Users" data-live-search="true" title="نام کاربر مربوط را انتخاب کنیید.."
+                        class="form-control selectpicker show-tick" data-size="4"></select>
+                <span asp-validation-for="UserId" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-default" data-dismiss="modal">خروج</button>
+            <button onclick="event.preventDefault();saveAndupdate($(this.form), $(this.form).attr('action'));"
+                    class="btn btn-primary" perform="action">
+                تایید
+            </button>
+        </div>
+    </div>
+</form>

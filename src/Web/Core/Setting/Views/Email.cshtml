@@ -1,0 +1,62 @@
+﻿@model Web.Core.Setting.ViewModels.EmailViewModel
+@{
+    ViewData["Title"] = "تنظیمات پست الکترونیکی";
+}
+<div class="m-portlet">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    @ViewBag.Title
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="m-portlet__body">
+        <form asp-controller="Setting" asp-action="SaveEmailDetail" id="frmSettingEmailDetail" method="post">
+            <div class="form-group ">
+                <label asp-for="Username" class="control-label"></label>
+                <input asp-for="Username" class="form-control" />
+                <span class="help-block"><span asp-validation-for="Username" class="text-danger"></span></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span class="help-block"><span asp-validation-for="Password" class="text-danger"></span></span>
+
+            </div>
+            <div class="form-group">
+                <label asp-for="EmailPortNumber" class="control-label"></label>
+                <input asp-for="EmailPortNumber" class="form-control" />
+                <span class="help-block"><span asp-validation-for="EmailPortNumber" class="text-danger"></span></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EmailSmtpServer" class="control-label"></label>
+                <input asp-for="EmailSmtpServer" class="form-control" />
+                <span class="help-block"><span asp-validation-for="EmailSmtpServer" class="text-danger"></span></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EnableSsl" class="control-label"></label>
+                <select asp-for="EnableSsl" class="form-control">
+                    <option value="">انتخاب کنید ...</option>
+                    <option value="True">فعال باشد</option>
+                    <option value="False">فعال نباشد</option>
+                </select>
+                <span class="help-block"><span asp-validation-for="EnableSsl" class="text-danger"></span></span>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <button perform="action" onclick="saveAndupdate($(this.form), '@Url.Action("SaveEmailDetail", "Setting")');return false;" class="btn btn-primary">
+                        ذخیره
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@section scripts
+    {
+    <script>
+        //$("#li-mail-setting, #li-setting").addClass('m-menu__item--active m-menu__item--open');
+    </script>
+}

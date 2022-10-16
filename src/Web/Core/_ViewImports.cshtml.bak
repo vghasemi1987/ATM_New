@@ -1,0 +1,3 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Infrastructure.Identity
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers

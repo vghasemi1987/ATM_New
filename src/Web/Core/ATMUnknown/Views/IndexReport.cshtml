@@ -1,0 +1,101 @@
+﻿@using Web.Core.ATMUnknown;
+
+@{
+    ViewBag.Title = "گزارش تراکنش های بلاتکلیف";
+}
+
+<div class="m-portlet">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    گزارش تراکنش های بلاتکلیف
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            const dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action(nameof(ATMUnknownController.GetRecordsReport))',
+                        dataType: "json",
+                        type: 'GET'
+                    },
+                    parameterMap: function(options) {
+                        return `models= ${kendo.stringify(options)}`;
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total"
+                },
+                error: function(e) {
+                    alert(e.errorThrown);
+                },
+                pageSize: 10,
+                sort: { field: "Id", dir: "asc" },
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            });
+
+            var grid = $("#report-grid").kendoGrid({
+                dataSource: dataSource,
+                autoBind: true,
+               // detailInit: detailInit,
+                scrollable: false,
+                pageable: {
+                    buttonCount: 5,
+                    refresh: true,
+                    input: true,
+                    pageSizes: [5, 10, 15, 20, 25, 50, 100],
+                    info: true
+                },
+                sortable: true,
+                filterable: {
+                    mode: "menu",
+                    messages: {
+                        selectedItemsFormat: "{0} آیتم انتخاب شده",
+                        search: "جستجو",
+                        checkAll: "انتخاب همه",
+                        clear: "لغو",
+                        filter: "اعمال"
+                    }
+                },
+                reorderable: true,
+                columnMenu: true,
+                columns: [
+                    { field: "Id", hidden:true },
+                    { field: "ATM", title: "شماره سریال دستگاه", media: "(min-width: 450px)" },
+                    { field: "ATMAtletCode", title: "شماره اتلت دستگاه", media: "(min-width: 450px)" },
+                    { field: "TransactionNumber", title: "شماره تراکنش", media: "(min-width: 450px)" },
+                    { field: "TransactionDate", title: "تاریخ تراکنش", media: "(min-width: 450px)" },
+                    { field: "TransactionTime", title: "ساعت تراکنش", media: "(min-width: 450px)" },
+                    { field: "TransactionAmount", title: "مبلغ تراکنش", media: "(min-width: 450px)" },
+                    { field: "CardNumber", title: "شماره کارت", media: "(min-width: 450px)" },
+                    { field: "BranchCode", title: "کد شعبه", media: "(min-width: 450px)" },
+                    { field: "CardType", title: "نوع کارت", media: "(min-width: 450px)" },
+                    { field: "StatusWorkfollowTitle", title: "وضعیت فرایند", media: "(min-width: 450px)" },
+                    { field: "UserDescription", title: "توضیحات", media: "(min-width: 450px)" },
+                    { field: "Status", title: "وضعیت", media: "(min-width: 450px)" },
+                    { field: "DeterminationDate", title: "تاریخ تایین تکلیف", media: "(min-width: 450px)" },
+                    {
+                        title: "عملیات", template:
+                            '<button class="k-button" data-link="/ATMUnknown/GetListWorkfollows/?id=#:Id#" data-title="نمایش فرایند"><span class="k-icon k-i-edit"></span>نمایش فرایند</button>'
+                    }
+                ]
+            }).data("kendoGrid");
+            grid.table.on("click", ".checkbox" , selectRow);
+        });
+    </script>
+}

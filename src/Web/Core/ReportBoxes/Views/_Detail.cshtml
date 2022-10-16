@@ -1,0 +1,57 @@
+﻿@using Web.Core.ReportBoxes.ModelViews
+@model FormViewModel
+
+<form asp-controller="ReportBoxes" asp-action="AddDetail" id="frmReportDetail" method="post">
+    <div class="modal-body">
+        <input asp-for="Id" />
+        <div class="form-group">
+            <label asp-for="Title" class="control-label"></label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Description" class="control-label"></label>
+            <input asp-for="Description" class="form-control" />
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="AccessRight" class="control-label"></label>
+            <select asp-for="AccessRight" asp-items="Model.Roles" multiple data-size="4" class="form-control selectpicker show-tick"></select>
+            <span asp-validation-for="AccessRight" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="BoxStatus" class="control-label"></label>
+            <select asp-for="BoxStatus" asp-items="Html.GetEnumSelectList<BoxStatus>()" class="form-control">
+                <option value="">لطفا انتخاب کنید...</option>
+            </select>
+            <span asp-validation-for="BoxStatus" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Icon" class="control-label"></label>
+            <input asp-for="Icon" class="form-control" />
+            <span asp-validation-for="Icon" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Key" class="control-label"></label>
+            <input asp-for="Key" class="form-control" />
+            <span asp-validation-for="Key" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Link" class="control-label"></label>&nbsp;(<span>برای تاریخ امروز از کلمه Now و برای کاربر فعلی از UserId استفاده شود</span>)
+            <input asp-for="Link" class="form-control" />
+            <span asp-validation-for="Link" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="SqlCommand" class="control-label"></label>&nbsp;(<span>برای نام کاربر فعلی از #UserId و برای اعمال شرط تاریخ از #picker1 و #picker2 استفاده شود.</span>)
+            <textarea asp-for="SqlCommand" class="form-control"></textarea>
+            <span asp-validation-for="SqlCommand" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" data-dismiss="modal">خروج</button>
+        <button onclick="event.preventDefault();saveAndupdate($(this.form), '@Url.Action(Model.Id>0?"EditDetail":"AddDetail", "ReportBoxes")');"
+                class="btn btn-primary" perform="action">
+            ذخیره
+        </button>
+    </div>
+</form>

@@ -1,0 +1,45 @@
+﻿@model Web.Core.Setting.ViewModels.AppViewModel
+@{
+    ViewData["Title"] = "تنظیمات سامانه";
+}
+
+<div class="m-portlet">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    @ViewBag.Title
+                </h3>
+            </div>
+        </div>
+    </div>
+    <form asp-controller="Setting" asp-action="SaveAppDetail" id="frmSettingAppDetail" method="post">
+        <div class="m-portlet__body">
+            <div class="form-group">
+                <label asp-for="WebSiteTitle" class="control-label"></label>
+                <input asp-for="WebSiteTitle" class="form-control" />
+                <span class="help-block"><span asp-validation-for="WebSiteTitle" class="text-danger"></span></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LogoFile" class="control-label"></label>
+                <input asp-for="LogoFile" class="form-control" />
+                <span asp-validation-for="LogoFile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FaviconFile" class="control-label"></label>
+                <input asp-for="FaviconFile" class="form-control" />
+                <span asp-validation-for="FaviconFile" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="m-portlet__foot">
+            <button onclick="saveAndupdateFile($(this.form), '@Url.Action("SaveAppDetail", "Setting")');return false;" type="button" class="btn btn-primary">ذخیره</button>
+        </div>
+    </form>
+</div>
+
+@section scripts
+{
+    <script>
+        //$("#li-app-setting, #li-setting").addClass('m-menu__item--active m-menu__item--open');
+    </script>
+}

@@ -1,0 +1,24 @@
+﻿@model Web.Core.TransactionDetails.ViewModels.ToNextStepViewModel
+
+<form asp-controller="TransactionDetails" asp-action="SubmitToState" id="frmSubmitToState" method="post">
+    <div class="modal-body">
+        @for (int i = 0; i < Model.Ids.Count; i++)
+        {
+            <input type="hidden" asp-for="Ids[i]" />
+        }
+        <div class="form-group">
+            <label asp-for="MessageText" class="control-label"></label>
+            <textarea asp-for="MessageText" class="form-control"></textarea>
+            <span asp-validation-for="MessageText" class="text-danger"></span>
+        </div>
+        <input type="hidden" asp-for="Status" />
+           
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" data-dismiss="modal">خروج</button>
+        <button onclick="event.preventDefault(); saveAndupdate($(this.form), '@Url.Action("SubmitToState", "TransactionDetails")');"
+                class="btn btn-primary" perform="action">
+            ذخیره
+        </button>
+    </div>
+</form>

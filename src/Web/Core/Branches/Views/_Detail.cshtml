@@ -1,0 +1,31 @@
+﻿@model Web.Core.Branches.ViewModels.BranchViewModel
+
+<form asp-controller="Branches" asp-action="AddDetail" id="frmBrancheDetail" method="post">
+    <div class="modal-body">
+        <input asp-for="Id" />
+        <div class="form-group">
+            <label asp-for="Title" class="control-label"></label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="code" class="control-label"></label>
+            <input asp-for="code" class="form-control" />
+            <span asp-validation-for="code" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="BranchHeadId" class="control-label"></label>
+            <select asp-for="BranchHeadId" asp-items="@Model. BranchHeadSelectList" data-selected-text-format="count" title="انتخاب کنید ..."
+                    class="form-control selectpicker show-tick" data-actions-box="true" data-size="4"></select>
+            <span asp-validation-for="BranchHeadId" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" data-dismiss="modal">خروج</button>
+        @{ var url = Model.Id > 0 ? Url.Action("EditDetail", "Branches") : Url.Action("AddDetail", "Branches");}
+        <button onclick="event.preventDefault(); saveAndupdate($(this.form), '@url');"
+                class="btn btn-primary" perform="action">
+            ذخیره
+        </button>
+    </div>
+</form>
